@@ -3,6 +3,7 @@ import './App.css';
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import User from './Components/User';
 import Project from './Components/Project';
+import Issues from './Components/Issues';
 
 function App() {
   const url = "https://onlinetestapi.gerasim.in/api/Glitch/";
@@ -25,12 +26,10 @@ function App() {
                     <li className="nav-item">
                       <Link className='nav-link' to="/project">Project</Link>
                     </li>
-                    
-                   
-                    
-
+                    <li className="nav-item">
+                      <Link className='nav-link' to="/Issues">Issues</Link>
+                    </li>
                   </ul>
-
                 </div>
               </div>
             </nav>
@@ -38,6 +37,7 @@ function App() {
             <Routes>
               <Route path="user" element={<User></User>}></Route>
               <Route path="/project" element={<Project></Project>}></Route>
+              <Route path="/Issues" element={<Issues></Issues>}></Route>
                
             </Routes>
           </div>
