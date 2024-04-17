@@ -53,25 +53,30 @@ const TicketStatus = () => {
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
         setissueObj((prevObj) => ({ ...prevObj, [key]: value }));
     };
-    /******* Save Issue */
+    /******* Save Issue Status */
     const saveIssueStatus = () => {
+        debugger;
         setvalidationerror(true);
-        try {
-            postData('AddNewStatus', issueObj).then(result => {
-                if (result != undefined) {
-                    alert(result.message);
-                    getissueSatusList();
-                }
-            })
-        } catch (error) {
-            alert(error);
+        if(issueObj.status!==''&&issueObj.orderNo!==0&&issueObj.isActive!=false){
+            try {
+                postData('AddNewStatus', issueObj).then(result => {
+                    if (result != undefined) {
+                        alert(result.message);
+                        getissueSatusList();
+                        setvalidationerror(false);
+                    }
+                })
+            } catch (error) {
+                alert(error);
+            }
+            resetIssueObj();
+            setShow(false);
         }
-        resetIssueObj();
-        setShow(false);
+     
 
 
     };
-    //**************8 Edit issue */
+    //************** Edit issue Status */
     const editIssue = (obj) => {
         setissueObj(obj);
         setShow(true);
@@ -222,17 +227,17 @@ const TicketStatus = () => {
                     </Modal.Body>
                     <Modal.Footer>
                         {issueObj.statusId === 0 && (
-                            <button className="btn btn-sm btn-primary m-2" onClick={saveIssueStatus}>Add</button>
+                            <Button className="btn btn-sm btn-primary m-2" onClick={saveIssueStatus}>Add</Button>
                         )}
                         {issueObj.statusId !== 0 && (
-                            <button className="btn btn-sm btn-primary m-2" onClick={updateIssueStatus}>Update</button>
+                            <Button className="btn btn-sm btn-primary m-2" onClick={updateIssueStatus}>Update</Button>
                         )}
-                        <button
+                        <Button
                             className="btn btn-sm btn-danger"
                             onClick={() => setShow(false)}
                         >
                             Cancel
-                        </button>
+                        </Button>
                     </Modal.Footer>
                 </Modal>
             </div>
