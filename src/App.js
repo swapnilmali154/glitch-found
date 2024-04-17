@@ -49,7 +49,6 @@ function App() {
                     
 
                   </ul>
-
                 </div>
               </div>
             </nav>

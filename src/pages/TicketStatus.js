@@ -1,14 +1,15 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { FaEdit } from 'react-icons/fa';
-import { FaTrash } from 'react-icons/fa';
-//import { Modal } from 'react-bootstrap';
-import { Modal } from "react-bootstrap";
+import { Table, Button, Card, Row, Col, Modal } from "react-bootstrap";
+import { deleteData, getData, postData } from '../Service/Service.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { AgGridReact } from 'ag-grid-react';
+import '../Service/Main.css'
+
 
 const TicketStatus = () => {
     const [issueStatusList, setIssueStatus] = useState([]);
-    const url = "https://onlinetestapi.gerasim.in/api/Glitch/";
-
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -20,15 +21,30 @@ const TicketStatus = () => {
         "isActive": false,
         "orderNo": 0
     });
-    /****** Get Status ID from GetAllIssue */
-    // const[statusid,setStatusID]=useState([]);
-    // const getStatusId=async()=>{
-    //     const result=await axios.get(`${url}`)
-    // }
+    const resetIssueObj = () => {
+        setissueObj({
+            "statusId": 0,
+            "status": "",
+            "isActive": false,
+            "orderNo": 0
+        })
+    }
+
     /***** Get All Issue Status */
-    const getissueSatusList = async () => {
-        const result = await axios.get(`${url}GetAllIssueStatus`);
-        setIssueStatus(result.data.data);
+    const getissueSatusList = () => {
+        try {
+            getData('GetAllIssueStatus').then(result => {
+                if (result != undefined) {
+                    setIssueStatus(result);
+                }
+                else {
+                    alert('in issue Status List');
+                }
+            })
+        } catch (error) {
+            alert(error);
+        }
+
     }
 
 
@@ -38,29 +54,22 @@ const TicketStatus = () => {
         setissueObj((prevObj) => ({ ...prevObj, [key]: value }));
     };
     /******* Save Issue */
-    const saveIssueStatus = async () => {
+    const saveIssueStatus = () => {
         setvalidationerror(true);
         try {
-            const result = await axios.post(`${url}AddNewStatus`, issueObj);
-            if (result.data.data) {
-                alert(result.data.message);
-                setissueObj({
-                    "statusId": 0,
-                    "status": "",
-                    "isActive": false,
-                    "orderNo": 0
-                });
-                getissueSatusList();
-                 handleClose();
-            } else {
-                alert(result.data.message);
-                debugger;
-               handleShow();
-            }
+            postData('AddNewStatus', issueObj).then(result => {
+                if (result != undefined) {
+                    alert(result.message);
+                    getissueSatusList();
+                }
+            })
         } catch (error) {
-            console.error('Error occurred while saving Issue:', error);
+            alert(error);
         }
-      
+        resetIssueObj();
+        setShow(false);
+
+
     };
     //**************8 Edit issue */
     const editIssue = (obj) => {
@@ -68,100 +77,91 @@ const TicketStatus = () => {
         setShow(true);
 
     }
-    const updateIssueStatus = async () => {
-        const response = await axios.post(`${url}UpdateStatus`, issueObj);
-        if (response.data.result) {
-            getissueSatusList();
-            alert(response.data.message);
-            setissueObj({
-                "statusId": 0,
-                "status": "",
-                "isActive": false,
-                "orderNo": 0
+    const updateIssueStatus = () => {
+        try {
+            postData('UpdateStatus', issueObj).then(result => {
+                if (result != undefined) {
+                    alert(result.message);
+                    getissueSatusList();
+                }
             })
-            setShow(false);
+        } catch (error) {
+            alert(error);
         }
-        else
-        {
-            alert(response.data.message);
-            debugger;
-            setShow(true);
-        }
+        resetIssueObj();
+        setShow(false);
+
 
     }
     //************ Delete Issue Status by Id */
 
-    const deleteIssueStatus=async(statusid)=>{
+    const deleteIssueStatus = (statusdata) => {
         debugger;
-        const response=await axios.get(`${url}DeleteStatusById?id=`+statusid);
-        if (response.data.result) {
-            alert(response.data.message);
-            getissueSatusList();
+        try {
+            debugger
+            deleteData('DeleteStatusById?id=', statusdata.statusid).then(result => {
+                debugger
+                if (result != undefined) {
+                    alert(result.message);
+                    getissueSatusList();
+                }
+            })
+        } catch (error) {
+            alert(error);
         }
-        else{
-            alert(response.data.message);
-        }
+
     }
+
+
     useEffect(() => {
         getissueSatusList();
     }, [])
+    const CustomButtonComponent = (props) => {
+        return (
+            <React.Fragment>
+                <button className='btn btn-sm btn-success' onClick={() => editIssue(props.data)} ><FontAwesomeIcon icon={faEdit} /></button>
+                <button className='btn btn-sm btn-danger' onClick={() => deleteIssueStatus(props.data)} ><FontAwesomeIcon icon={faTrash} /></button>
+            </React.Fragment>
+        );
+    };
+
+    const [colDefs, setColDefs] = useState([
+        { field: "status" },
+        { field: "isActive" },
+        { field: "orderNo" },
+        { field: "Action", cellRenderer: CustomButtonComponent }
+
+    ]);
+
     return (
         <div>
 
-            <div className="row mt-3">
+            <div className="row mt-3 container-fluid">
                 {/* {JSON.stringify(issueStatusList)} */}
-                <div className="col-md-1"></div>
-                <div className="col-md-10 ">
-                    <div className="card bg-light">
-                        <div className="card-header bg-light">
-                            <div className="row  mt-3">
-                                <div className="col-md-9">
-                                    <h4>Issue Status List</h4>
-                                </div>
-                                <div className="col-md-3">
-                                    <button className='btn btn-primary' onClick={handleShow}>Add New</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="card-body bg-light ">
-                            <table className="table table-bordered ">
-                                <thead>
-                                    <tr>
-                                        <th>Sr.No</th>
-                                        {/* <th>Status ID</th> */}
-                                        <th>Status</th>
-                                        <th>Active</th>
-                                        <th>Order No</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        issueStatusList.map((issue, index) => {
-                                            return (
-                                                <tr key={index}>
-                                                    <td>{index + 1}</td>
-                                                    {/* <td>{issue.statusId}</td> */}
-                                                    <td>{issue.status}</td>
-                                                    <td>{issue.isActive ? 'True' : 'False'}</td>
-                                                    <td>{issue.orderNo}</td>
 
-                                                    <td>
-                                                        <button className="btn btn-sm btn-success m-2" onClick={() => editIssue(issue)} >
-                                                            <FaEdit />
-                                                        </button>
-                                                        <button className="btn btn-sm btn-danger"  onClick={()=>{deleteIssueStatus(issue.statusId)}}>
-                                                            <FaTrash />
-                                                        </button>
-                                                    </td>
-                                                </tr>)
-                                        })
-                                    }
-                                </tbody>
-                            </table>
+                <Card>
+                    <Card.Header className="d-flex justify-content-between align-items-center">
+                        <h4> Issue Status List</h4>
+                        <Button onClick={handleShow}>Add New</Button>
+                    </Card.Header>
+                    <Card.Body className="d-flex justify-content-center align-items-center">
+                        <div
+                            className="ag-theme-quartz" style={{ height: 500, width: '65%' }}
+                        >
+                            <AgGridReact
+                                rowData={issueStatusList}
+                                columnDefs={colDefs}
+                                pagination={true}
+                                paginationPageSize={5}
+                                paginationPageSizeSelector={[5, 10, 25]} 
+                            />
                         </div>
-                    </div>
-                </div>
+                    </Card.Body>
+                    <Card.Footer>
+
+                    </Card.Footer>
+                </Card>
+
             </div>
             <div className="col-md-12">
                 <Modal show={show} onHide={handleClose}>
@@ -173,7 +173,7 @@ const TicketStatus = () => {
                             <div>
                                 <div>
                                     <div className="row">
-                                     
+
                                         <div className='col-md-6'>
                                             <label>Status</label>
                                             <input type="text" className='form-control' value={issueObj.status} onChange={(event) => handleChange(event, "status")} />
@@ -192,7 +192,7 @@ const TicketStatus = () => {
                                                 className="form-control"
                                                 value={issueObj.orderNo}
                                                 onChange={(event) => handleChange(event, "orderNo")}
-                                             />
+                                            />
                                             {
                                                 validationerror && issueObj.orderNo == '' && <div className='text-danger'>
                                                     This field is required
@@ -208,7 +208,7 @@ const TicketStatus = () => {
                                                 type="checkbox"
                                                 checked={issueObj.isActive}
                                                 onChange={(event) => handleChange(event, "isActive")}
-                                           required />
+                                                required />
                                             {
                                                 validationerror && issueObj.isActive == '' && <div className='text-danger'>
                                                     This field is required
