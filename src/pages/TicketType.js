@@ -1,210 +1,216 @@
-
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Modal } from "react-bootstrap";
-import { FaTrash } from 'react-icons/fa';
-import { FaEdit } from 'react-icons/fa';
-import Issues from "./Issues";
-
+import React, { useEffect, useState } from 'react';
+import { Table, Button, Card, Row, Col, Modal } from "react-bootstrap";
+import { deleteData, getData, postData } from '../Service/Service.js';
+import '../Service/Main.css'
+import { AgGridReact } from 'ag-grid-react';
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-quartz.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const TicketType = () => {
-
-    const url = "https://onlinetestapi.gerasim.in/api/Glitch/";
-
     const [issueTypeList, setIssueTypeList] = useState([]);
     const [issueTypeObj, setIssueTypeObj] = useState({
         "issueTypeId": 0,
         "issueType": ""
     });
 
-    const getIssueTypeList = async () => {
-        const result = await axios.get(`${url}GetAllIssueTypes`);
-        setIssueTypeList(result.data.data);
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => {
+        setShow(true);
+        resetIssueObj();
     };
+    const [validationerror, setvalidationerror] = useState(false);
+
+    const getIssueTypeList = async () => {
+        getData('GetAllIssueTypes').then(result => {
+            try {
+                if (result != undefined) {
+                    setIssueTypeList(result);
+                }
+                else {
+                    alert('Something went wrong');
+                }
+            } catch (error) {
+                alert(error);
+            }
+
+        })
+    }
+
 
     useEffect(() => {
         getIssueTypeList();
     }, []);
 
-    const [show, setShow] = useState(false);
+    const CustomButtonComponent = (props) => {
+        return (
+            <React.Fragment>
+                <button className='btn btn-sm btn-success' onClick={() => onEdit(props.data)} ><FontAwesomeIcon icon={faEdit} /></button>
+                <button className='btn btn-sm btn-danger' onClick={() => onDelete(props.data)} ><FontAwesomeIcon icon={faTrash} /></button>
+            </React.Fragment>
+        );
+    };
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const onEdit = (issueData) => {
+        setIssueTypeObj(issueData);
+        setShow(true);
+        getIssueTypeList();
+    }
+   
 
-    const [validationerror, setvalidationerror] = useState(false);
+    const onDelete = (issueData) => {
+        try {
+            debugger
+            deleteData('DeleteIssueTypeById?id=', issueData.issueTypeId).then(result => {
+                debugger
+                if (result != undefined) {
+                    alert(result.message);
+                    getIssueTypeList();
+                }
+            })
+        } catch (error) {
+            alert(error);
+        }
+
+    }
+
+    const [colDefs, setColDefs] = useState([
+        { field: "issueTypeId" },
+        { field: "issueType" },
+        { field: "Action", cellRenderer: CustomButtonComponent }
+
+    ]);
 
     const handleChange = (event, key) => {
         setIssueTypeObj((prevObj) => ({ ...prevObj, [key]: event.target.value }));
+    }
 
-    };
-    const saveIssueType = async () => {
+    const saveIssueType = () => {
         debugger
-        setvalidationerror(true);
         try {
-            const result = await axios.post(`${url}AddNewType`, issueTypeObj);
-            if (result.data.data) {
-                alert(result.data.message);
-                setIssueTypeObj({
-                    issueTypeId: 0,
-                    issueType: ""
-                });
-                getIssueTypeList();
-            } else {
-                alert(result.data.message);
-            }
+            postData('AddNewType', issueTypeObj).then(result => {
+                if (result != undefined) {
+                    alert(result.message);
+                    setIssueTypeObj({
+                        issueTypeId: 0,
+                        issueType: ""
+                    });
+                    getIssueTypeList();
+                }
+            })
         } catch (error) {
-            console.error('Error occurred while saving issuetype:', error);
+            alert(error);
         }
+        resetIssueObj();
         setShow(false);
-    };
 
-    const editIssueType = (IssueType) => {
-        setIssueTypeObj(IssueType);
-        setShow(true);
-        
-    };
-
-
-    const updateIssueType = async () => {
+    }
+    const UpdateIssueType = () => {
         debugger
         try {
-            const result = await axios.post(`${url}UpdateIssueType`, issueTypeObj);
-            if (result.data.result) {
-                alert('Record Updated..!');
-            }
-            else {
-                alert(result.data.message);
-            }
+            postData('UpdateIssueType', issueTypeObj).then(result => {
+                if (result != undefined) {
+                    alert(result.message);
+                    getIssueTypeList();
+                }
+            })
+        } catch (error) {
+            alert(error);
         }
-        catch (error) {
-            console.error("An error occurred while updating the employee:", error);
-        }
-        getIssueTypeList();
+        resetIssueObj();
+        setShow(false);
+    }
+
+    const resetIssueObj = () => {
         setIssueTypeObj({
             issueTypeId: 0,
-            issueType: ""
+            issueType: "",
+
         });
-        setShow(false);
-    }
+    };
 
-    // const removeIssueType = (issueTypeId) => {
-    //     setIssueTypeObj(Issues.issueTypeId);
-    //     setShow(true);
-        
-    // };
 
-    const deleteIssueType = async (issueTypeId) => {
-        debugger
-        const result = await axios.get(`${url}DeleteIssueTypeById?IssueTypeId=` + issueTypeId);
-        if (result.data.result) {
-            alert("Record deleted");
-        }
-        else {
-            alert(result.data.message);
-        }
-        getIssueTypeList();
-       
-    }
 
     return (
-        <div>
-            {/* {JSON.stringify({ attendanceObj })} */}
-            <div className="row mt-3">
-                <div className="col-md-1"></div>
-                <div className="col-md-10 ">
-                    <div className="card bg-light">
-                        <div className="card-header bg-light">
-                            <div className="row  mt-3">
-                                <div className="col-md-9">
-                                    <h4>Issue Type List</h4>
-                                </div>
-                                <div className="col-md-3">
-                                    <button className='btn btn-primary' onClick={handleShow}>Add New</button>
+        <div className='main-container '>
+            <div className='mt-10'>
+                <Card>
+                    <Card.Header className=" d-flex justify-content-between align-items-center">
+                        <h4 >Issue Type List</h4>
+                        <Button onClick={handleShow}>Add New</Button>
+                    </Card.Header>
+                  
+                    <Card.Body>
+                        <div
+                            className="ag-theme-quartz " style={{textAlign: 'center', height: 500, width: '100%' }}
+                        >
+                            <AgGridReact
+                                rowData={issueTypeList }
+                                columnDefs={colDefs}
+                                pagination={true}
+                                paginationPageSize={10}
+                                paginationPageSizeSelector={[10, 25, 50]}
+                                onGridReady={(props) => props.api.sizeColumnsToFit()}
+                            />
+                        </div>
+                    </Card.Body>
+                    <Card.Footer>
+
+                    </Card.Footer>
+                </Card>
+                <div className='col-md-12'>
+                    <Modal show={show} onHide={handleClose}>
+                        <Modal.Header closeButton className=' custom-card-header'>
+                            <Modal.Title>
+                                {
+                                    issueTypeObj.issueTypeId == 0 && <h4>Add Issue Type</h4>
+                                }
+                                {
+                                    issueTypeObj.issueTypeId != 0 && <h4>Update Issue Type</h4>
+                                }</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <div>
+                                <div className="row my-2">
+                                    <div className='col-md-6'>
+                                        <label>Issue Type </label>
+                                        <input type="text" className='form-control my-2' placeholder='Enter Issue Type'
+                                            value={issueTypeObj.issueType} onChange={(event) => handleChange(event, 'issueType')} />
+                                        {
+                                            validationerror && issueTypeObj.issueType == '' && <div className='text-danger'>
+                                                This field is required
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="card-body bg-light ">
-                            <table className="table table-bordered ">
-                                <thead>
-                                    <tr>
-                                        <th>Sr.No</th>
-                                        <th>Issue Type</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {issueTypeList.map((issue, index) => {
-                                        return (
-                                            <tr key={index}>
-                                                <td>{index + 1}</td>
-                                                <td>{issue.issueType}</td>
+                        </Modal.Body>
+                        <Modal.Footer style={{ display: 'flex', justifyContent: 'center' }}>
+                            <div>
+                                {
+                                    issueTypeObj.issueTypeId == 0 &&
+                                    <Button variant='success' onClick={saveIssueType}>Add</Button>
 
-                                                <td>
-                                                    <button className="btn btn-sm btn-success m-2 " onClick={() => editIssueType(issue)}>
-                                                        <FaEdit />
-                                                    </button>
-                                                    <button className="btn btn-sm btn-danger " onClick={() => deleteIssueType(issue.issueTypeId)}>
-                                                        <FaTrash 
-                                                        />
-                                                         
-                                                    </button>
-                                                  
-                                                    
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                }
+                                {
+                                    issueTypeObj.issueTypeId !== 0 &&
+                                    <Button variant='success' onClick={UpdateIssueType}>Update</Button>
+
+                                }
+                                <Button variant='danger' className='m-2' onClick={() => setShow(false)}>Cancel</Button>
+
+                            </div>
+                        </Modal.Footer>
+                    </Modal>
                 </div>
             </div>
-            <div className="col-md-12">
-                <Modal show={show} onHide={handleClose}>
-                    {/* <Modal.Header closeButton className="bg-light">
-                        <Modal.Title>Issue Type</Modal.Title>
-                    </Modal.Header> */}
-                    <Modal.Header closeButton className="bg-light">
-                        <Modal.Title>
-                        {issueTypeObj.issueTypeId === 0 && 'Add Issue Type'}
-                        {issueTypeObj.issueTypeId !== 0 && 'Update Issue Type'}
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div>
-                            <div className="row my-2">
-                                <div className='col-md-6'>
-                                    <label>Issue Type </label>
-                                    <input type="text" className='form-control' placeholder='Enter Issue Type'
-                                        value={issueTypeObj.issueType} onChange={(event) => handleChange(event, 'issueType')} />
-                                    {
-                                        validationerror && issueTypeObj.issueType == '' && <div className='text-danger'>
-                                            This field is required
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </Modal.Body>
 
-                    <Modal.Footer>
-                        {issueTypeObj.issueTypeId === 0 && (
-                            <button className="btn btn-sm btn-primary m-2" onClick={saveIssueType}>Add</button>
-                        )}
-                        {issueTypeObj.issueTypeId !== 0 && (
-                            <button className="btn btn-sm btn-primary m-2" onClick={updateIssueType}>Update</button>
-                        )}
-                        <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => setShow(false)}>
-                            Cancel
-                        </button>
-                    </Modal.Footer>
-                </Modal>
-            </div>
         </div>
+
     );
 };
+
 
 export default TicketType;
