@@ -42,9 +42,7 @@ function App() {
                     <li className="nav-item">
                       <Link className='nav-link' to="/ticketStatus">TicketStatus</Link>
                     </li>
-                    <li className="nav-item">
-                      <Link className='nav-link' to="/status">Status</Link>
-                    </li>
+                  
                    
                     
 
