@@ -8,6 +8,7 @@ import ProjectUser from './pages/ProjectUser';
 import TicketStatus from './pages/TicketStatus';
 import TicketType from './pages/TicketType';
 
+
 function App() {
   const url = "https://onlinetestapi.gerasim.in/api/Glitch/";
   return (
@@ -39,11 +40,8 @@ function App() {
                       <Link className='nav-link' to="/ticketType">TicketType</Link>
                     </li>
                     <li className="nav-item">
-                      <Link className='nav-link' to="/tickeStatus">TickeStatus</Link>
-                    </li>
-                    
-                   
-                    
+                      <Link className='nav-link' to="/ticketStatus">TicketStatus</Link>
+                    </li>  
 
                   </ul>
                 </div>
@@ -55,8 +53,10 @@ function App() {
               <Route path="/project" element={<Project></Project>}></Route>
               <Route path="/issues" element={<Issues></Issues>}></Route>
               <Route path="/projectUser" element={<ProjectUser></ProjectUser>}></Route>
-              <Route path="/ticketStatus" element={<TicketStatus></TicketStatus>}></Route>
+            
               <Route path="/ticketType" element={<TicketType></TicketType>}></Route>
+              <Route path="/ticketStatus" element={<TicketStatus></TicketStatus>}></Route>
+              
                
             </Routes>
           </div>
