@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
 import {
-  createUser,
-  deleteUserById,
-  getAllRoles,
-  getAllUsers,
-  updateUser,
-} from "../core/services/UserService";
+  GET_ALL_ROLES,
+  GET_ALL_USERS,
+  CREATE_USER,
+  UPDATE_USER,
+  DELETE_USER_BY_ID,
+} from "../core/constant/Constant.js";
+import { deleteData, getData, postData } from '../Service/Service.js';
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { VALIDATION_REQUIRED } from "../core/constant/Constant";
 import { FaEdit } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
+import { AgGridReact } from "ag-grid-react";
 
 const User = () => {
   const [userList, setUserList] = useState([]);
   const [rolesList, setRolesList] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-
+  const pagination = true;
+  const paginationPageSize = 10;
+  const paginationPageSizeSelector = [10, 20, 30];
   const [userData, setUserData] = useState({
     userId: 0,
     emailId: "",
@@ -30,26 +34,19 @@ const User = () => {
     fullName: "",
   });
 
-  useEffect(() => {
-    getUsers();
-    getRoles();
-  }, []);
-
   const getUsers = () => {
-    getAllUsers().then((result) => {
+    getData(GET_ALL_USERS).then((result) => {
       setUserList(result);
     });
   };
 
   const getRoles = () => {
-    getAllRoles().then((result) => {
+    getData(GET_ALL_ROLES).then((result) => {
       setRolesList(result);
     });
   };
 
-  const openModal = () => setModalIsOpen(true);
-  const closeModal = () => {
-    setModalIsOpen(false);
+  const resetUserData = () => {
     setUserData({
       userId: 0,
       emailId: "",
@@ -61,7 +58,13 @@ const User = () => {
       technicalStack: "",
       fullName: "",
     });
-  }
+  };
+
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => {
+    setModalIsOpen(false);
+    resetUserData();
+  };
 
   const updateFormValue = (event, key) => {
     setUserData((prevobj) => ({ ...prevobj, [key]: event.target.value }));
@@ -69,6 +72,50 @@ const User = () => {
 
   const updateCheckboxValue = (event, key) => {
     setUserData((prevObj) => ({ ...prevObj, [key]: event.target.checked }));
+  };
+
+  useEffect(() => {
+    getUsers();
+    getRoles();
+  }, []);
+
+  const CustomButtonComponent = (props) => {
+    return (
+      <>
+        <Button
+          variant="primary"
+          className="btn-sm m-1"
+          onClick={() => onEdit(props.data)}
+        >
+          <FaEdit />
+        </Button>
+        <Button
+          variant="danger"
+          className="btn-sm"
+          onClick={() => onDelete(props.data)}
+        >
+          <FaTrash />
+        </Button>
+      </>
+    );
+  };
+
+  const onEdit = (user) => {
+    setUserData(user);
+    openModal();
+  };
+
+  const onDelete = (user) => {
+    deleteData(DELETE_USER_BY_ID, user.userId).then((result) => {
+      if (result !== undefined) {
+        if (result.result) {
+          alert("User deleted successfully");
+        } else {
+          alert(result.message);
+        }
+      }
+      getUsers();
+    });
   };
 
   const addUser = () => {
@@ -81,21 +128,11 @@ const User = () => {
       userData.technicalStack !== "" &&
       userData.userLogo !== ""
     ) {
-      createUser(userData).then((result) => {
+      postData(CREATE_USER, userData).then((result) => {
         if (result.result) {
           alert("User created successfully");
           getUsers();
-          setUserData({
-            userId: 0,
-            emailId: "",
-            password: "",
-            role: 0,
-            createdDate: "",
-            isActive: false,
-            userLogo: "",
-            technicalStack: "",
-            fullName: "",
-          });
+          resetUserData();
           closeModal();
           setIsFormSubmitted(false);
         } else {
@@ -103,11 +140,6 @@ const User = () => {
         }
       });
     }
-  };
-
-  const onEdit = (user) => {
-    setUserData(user);
-    openModal()
   };
 
   const editUser = () => {
@@ -120,21 +152,11 @@ const User = () => {
       userData.technicalStack !== "" &&
       userData.userLogo !== ""
     ) {
-      updateUser(userData).then((result) => {
+      postData(UPDATE_USER, userData).then((result) => {
         if (result.result) {
           alert("User updated successfully");
           getUsers();
-          setUserData({
-            userId: 0,
-            emailId: "",
-            password: "",
-            role: 0,
-            createdDate: "",
-            isActive: false,
-            userLogo: "",
-            technicalStack: "",
-            fullName: "",
-          });
+          resetUserData();
           closeModal();
           setIsFormSubmitted(false);
         } else {
@@ -144,18 +166,16 @@ const User = () => {
     }
   };
 
-  const onDelete = (userId) => {
-    debugger;
-    deleteUserById(userId).then((result) => {
-      debugger;
-      if (result.result) {
-        alert("User deleted successfully");
-      } else {
-        alert(result.message);
-      }
-      getAllUsers();
-    });
-  };
+  const [colDefs, setColDefs] = useState([
+    { field: "fullName" },
+    { field: "emailId" },
+    { field: "password" },
+    { field: "roleName" },
+    { field: "createdDate" },
+    { field: "technicalStack" },
+    { field: "isActive" },
+    { field: "Action", cellRenderer: CustomButtonComponent },
+  ]);
 
   return (
     <div>
@@ -175,54 +195,17 @@ const User = () => {
               </div>
             </div>
             <div className="card-body">
-              <div className="row">
-                <div className="col-12 table-responsive">
-                  <table className="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th>Full Name</th>
-                        <th>Email Id</th>
-                        <th>password</th>
-                        <th>Role Name</th>
-                        <th>created Date</th>
-                        <th>Technical Stack</th>
-                        <th>Is Active</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {userList.map((user, index) => {
-                        return (
-                          <tr key={index}>
-                            <td>{user.fullName}</td>
-                            <td>{user.emailId}</td>
-                            <td>{user.password}</td>
-                            <td>{user.roleName}</td>
-                            <td>{user.createdDate}</td>
-                            <td>{user.technicalStack}</td>
-                            <td>{user.isActive ? "Yes" : "No"}</td>
-                            <td>
-                              <Button
-                                variant="primary"
-                                className="btn-sm m-1"
-                                onClick={() => onEdit(user)}
-                              >
-                                <FaEdit />
-                              </Button>
-                              <Button
-                                variant="danger"
-                                className="btn-sm"
-                                onClick={() => onDelete(user.userId)}
-                              >
-                                <FaTrash />
-                              </Button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+              <div
+                className="ag-theme-quartz"
+                style={{ height: 500, width: "100%" }}
+              >
+                <AgGridReact
+                  rowData={userList}
+                  columnDefs={colDefs}
+                  pagination={pagination}
+                  paginationPageSize={paginationPageSize}
+                  paginationPageSizeSelector={paginationPageSizeSelector}
+                />
               </div>
             </div>
           </div>
