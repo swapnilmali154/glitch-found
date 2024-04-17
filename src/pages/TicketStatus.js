@@ -57,7 +57,7 @@ const TicketStatus = () => {
     const saveIssueStatus = () => {
         debugger;
         setvalidationerror(true);
-        if(issueObj.status!==''&&issueObj.orderNo!==0&&issueObj.isActive!=false){
+        if (issueObj.status !== '' && issueObj.orderNo !== 0 && issueObj.isActive != false) {
             try {
                 postData('AddNewStatus', issueObj).then(result => {
                     if (result != undefined) {
@@ -72,7 +72,7 @@ const TicketStatus = () => {
             resetIssueObj();
             setShow(false);
         }
-     
+
 
 
     };
@@ -143,35 +143,39 @@ const TicketStatus = () => {
 
             <div className="row mt-3 container-fluid">
                 {/* {JSON.stringify(issueStatusList)} */}
+                <div className="row mt-3">
+                    <div className="col-md-12">
+                        <Card>
+                            <Card.Header className="d-flex justify-content-between">
+                                <h4> Issue Status List</h4>
+                                <Button onClick={handleShow}>Add New</Button>
+                            </Card.Header>
+                            <Card.Body className="d-flex justify-content-center align-items-center">
+                                <div
+                                    className="ag-theme-quartz" style={{ height: 500, width: '65%' }}
+                                >
+                                    <AgGridReact
+                                        rowData={issueStatusList}
+                                        columnDefs={colDefs}
+                                        pagination={true}
+                                        paginationPageSize={5}
+                                        paginationPageSizeSelector={[5, 10, 25]}
+                                    />
+                                </div>
+                            </Card.Body>
+                            <Card.Footer>
 
-                <Card>
-                    <Card.Header className="d-flex justify-content-between align-items-center">
-                        <h4> Issue Status List</h4>
-                        <Button onClick={handleShow}>Add New</Button>
-                    </Card.Header>
-                    <Card.Body className="d-flex justify-content-center align-items-center">
-                        <div
-                            className="ag-theme-quartz" style={{ height: 500, width: '65%' }}
-                        >
-                            <AgGridReact
-                                rowData={issueStatusList}
-                                columnDefs={colDefs}
-                                pagination={true}
-                                paginationPageSize={5}
-                                paginationPageSizeSelector={[5, 10, 25]} 
-                            />
-                        </div>
-                    </Card.Body>
-                    <Card.Footer>
-
-                    </Card.Footer>
-                </Card>
-
+                            </Card.Footer>
+                        </Card>
+                    </div></div>
             </div>
             <div className="col-md-12">
                 <Modal show={show} onHide={handleClose}>
                     <Modal.Header closeButton className="bg-light">
-                        <Modal.Title>Issue</Modal.Title>
+                        <Modal.Title>
+                            {issueObj.statusId === 0 ? "Add Issue Status" : "Update Issue Status"}
+                        </Modal.Title>
+
                     </Modal.Header>
                     <Modal.Body>
                         <div>
