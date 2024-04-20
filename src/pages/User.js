@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   GET_ALL_ROLES,
   GET_ALL_USERS,
@@ -6,13 +6,16 @@ import {
   UPDATE_USER,
   DELETE_USER_BY_ID,
 } from "../core/constant/Constant.js";
-import { deleteData, getData, postData } from '../Service/Service.js';
+import { deleteData, getData, postData } from "../Service/Service.js";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { VALIDATION_REQUIRED } from "../core/constant/Constant";
 import { FaEdit } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
 import { AgGridReact } from "ag-grid-react";
+import { FaUser } from "react-icons/fa";
+import { FaUserEdit } from "react-icons/fa";
+import { AiOutlineClose } from "react-icons/ai";
 
 const User = () => {
   const [userList, setUserList] = useState([]);
@@ -110,11 +113,11 @@ const User = () => {
       if (result !== undefined) {
         if (result.result) {
           alert("User deleted successfully");
+          getUsers();
         } else {
           alert(result.message);
         }
       }
-      getUsers();
     });
   };
 
@@ -132,9 +135,8 @@ const User = () => {
         if (result.result) {
           alert("User created successfully");
           getUsers();
-          resetUserData();
-          closeModal();
           setIsFormSubmitted(false);
+          closeModal();
         } else {
           alert(result.message);
         }
@@ -156,9 +158,8 @@ const User = () => {
         if (result.result) {
           alert("User updated successfully");
           getUsers();
-          resetUserData();
-          closeModal();
           setIsFormSubmitted(false);
+          closeModal();
         } else {
           alert(result.message);
         }
@@ -167,14 +168,12 @@ const User = () => {
   };
 
   const [colDefs, setColDefs] = useState([
-    { field: "fullName" },
-    { field: "emailId" },
-    { field: "password" },
-    { field: "roleName" },
-    { field: "createdDate" },
-    { field: "technicalStack" },
-    { field: "isActive" },
-    { field: "Action", cellRenderer: CustomButtonComponent },
+    { field: "fullName", flex: 1 },
+    { field: "emailId", flex: 1 },
+    { field: "roleName", flex: 1 },
+    { field: "technicalStack", flex: 1 },
+    { field: "userLogo", flex: 1 },
+    { field: "Action", cellRenderer: CustomButtonComponent, flex: 0.5 },
   ]);
 
   return (
@@ -183,13 +182,13 @@ const User = () => {
         <div className="col-md-12">
           <div className="card bg-light my-2 mx-4">
             <div className="card-header bg-light">
-              <div className="row mt-3">
-                <div className="col-9">
+              <div className="row">
+                <div className="col-9 text-start">
                   <h4>User List</h4>
                 </div>
-                <div className="col-3">
+                <div className="col-3 text-end">
                   <button className="btn btn-primary" onClick={openModal}>
-                    Add User
+                    <FaUser /> Add User
                   </button>
                 </div>
               </div>
@@ -197,7 +196,7 @@ const User = () => {
             <div className="card-body">
               <div
                 className="ag-theme-quartz"
-                style={{ height: 500, width: "100%" }}
+                style={{ height: 450, width: "100%" }}
               >
                 <AgGridReact
                   rowData={userList}
@@ -213,7 +212,12 @@ const User = () => {
 
         {/* Add User Modal */}
 
-        <Modal show={modalIsOpen} onHide={closeModal}>
+        <Modal
+          show={modalIsOpen}
+          onHide={closeModal}
+          backdrop="static"
+          keyboard="false"
+        >
           <Modal.Header closeButton className="bg-light">
             <Modal.Title>
               {userData.userId === 0 ? "Add User" : "Update User"}
@@ -354,18 +358,18 @@ const User = () => {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="danger" onClick={closeModal}>
-              Cancel
-            </Button>
             {userData.userId === 0 ? (
               <Button variant="primary" onClick={addUser}>
-                Add
+                <FaUser /> Add
               </Button>
             ) : (
               <Button variant="primary" onClick={editUser}>
-                Update
+                <FaUserEdit /> Update
               </Button>
             )}
+            <Button variant="danger" onClick={closeModal}>
+              Cancel <AiOutlineClose />
+            </Button>
           </Modal.Footer>
         </Modal>
       </div>
