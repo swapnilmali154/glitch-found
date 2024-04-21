@@ -462,9 +462,9 @@ const Master = () => {
                                             </Card.Title>
                                             <Button onClick={displayModal}>Add New  <FontAwesomeIcon icon={faPlus} /></Button>
                                         </Card.Header>
-                                        <Card.Body className="d-flex justify-content-center align-items-center">
+                                        <Card.Body className="d-flex justify-content-center">
                                             <div
-                                                className="ag-theme-quartz  d-flex justify-content-center align-items-center" style={{ height: 500, width: '65%' } }
+                                                className="ag-theme-quartz align-item-center " style={{ height: 500, width: '55%' } }
                                             >
                                                 <AgGridReact
                                                     columnDefs={columnDefs}
