@@ -66,6 +66,7 @@ const User = () => {
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => {
     setModalIsOpen(false);
+    setIsFormSubmitted(false);
     resetUserData();
   };
 
@@ -135,7 +136,6 @@ const User = () => {
         if (result.result) {
           alert("User created successfully");
           getUsers();
-          setIsFormSubmitted(false);
           closeModal();
         } else {
           alert(result.message);
@@ -158,7 +158,6 @@ const User = () => {
         if (result.result) {
           alert("User updated successfully");
           getUsers();
-          setIsFormSubmitted(false);
           closeModal();
         } else {
           alert(result.message);
@@ -360,15 +359,15 @@ const User = () => {
           <Modal.Footer>
             {userData.userId === 0 ? (
               <Button variant="primary" onClick={addUser}>
-                <FaUser /> Add
+                Add
               </Button>
             ) : (
               <Button variant="primary" onClick={editUser}>
-                <FaUserEdit /> Update
+                Update
               </Button>
             )}
-            <Button variant="danger" onClick={closeModal}>
-              Cancel <AiOutlineClose />
+            <Button variant="secondary" onClick={closeModal}>
+              Reset
             </Button>
           </Modal.Footer>
         </Modal>
