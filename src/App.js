@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import User from './pages/User'
 import Project from './pages/Project'
 import Issues from './pages/Issues';
@@ -9,12 +9,15 @@ import TicketStatus from './pages/TicketStatus';
 import TicketType from './pages/TicketType';
 
 
+
 function App() {
   const url = "https://onlinetestapi.gerasim.in/api/Glitch/";
+ 
+  
   return (
     <div className="App">
        <BrowserRouter>
-          <div classNameName="App">
+          <div className="App">
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
               <div className="container-fluid">
                 <a className="navbar-brand" href="#">GlitchFound</a>
