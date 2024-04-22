@@ -14,8 +14,8 @@ import { FaEdit } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
 import { AgGridReact } from "ag-grid-react";
 import { FaUser } from "react-icons/fa";
-import { FaUserEdit } from "react-icons/fa";
-import { AiOutlineClose } from "react-icons/ai";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const User = () => {
   const [userList, setUserList] = useState([]);
@@ -40,6 +40,8 @@ const User = () => {
   const getUsers = () => {
     getData(GET_ALL_USERS).then((result) => {
       setUserList(result);
+      const userWithSerialNumbers = addSerialNumbers(result);
+      setUserList(userWithSerialNumbers);
     });
   };
 
@@ -83,11 +85,17 @@ const User = () => {
     getRoles();
   }, []);
 
+  const addSerialNumbers = (data) => {
+    return data.map((user, index) => {
+      return { ...user, Srno: index + 1 };
+    });
+  };
+
   const CustomButtonComponent = (props) => {
     return (
       <>
         <Button
-          variant="primary"
+          variant="success"
           className="btn-sm m-1"
           onClick={() => onEdit(props.data)}
         >
@@ -134,7 +142,7 @@ const User = () => {
     ) {
       postData(CREATE_USER, userData).then((result) => {
         if (result.result) {
-          alert("User created successfully");
+          toast.success("User created successfully");
           getUsers();
           closeModal();
         } else {
@@ -156,7 +164,7 @@ const User = () => {
     ) {
       postData(UPDATE_USER, userData).then((result) => {
         if (result.result) {
-          alert("User updated successfully");
+          toast.success("User updated successfully");
           getUsers();
           closeModal();
         } else {
@@ -167,11 +175,16 @@ const User = () => {
   };
 
   const [colDefs, setColDefs] = useState([
+    {
+      field: "Srno",
+      flex: 0.5,
+      headerName: "Sr No",
+      cellStyle: { textAlign: "center" },
+    },
     { field: "fullName", flex: 1 },
     { field: "emailId", flex: 1 },
     { field: "roleName", flex: 1 },
     { field: "technicalStack", flex: 1 },
-    { field: "userLogo", flex: 1 },
     { field: "Action", cellRenderer: CustomButtonComponent, flex: 0.5 },
   ]);
 
@@ -371,6 +384,13 @@ const User = () => {
             </Button>
           </Modal.Footer>
         </Modal>
+        <ToastContainer
+          position="top-right"
+          autoClose={1000}
+          closeButton={false}
+          theme="light"
+        />
+        <ToastContainer />
       </div>
     </div>
   );
