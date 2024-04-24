@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Button, Card, Row, Col, Modal, Toast, Breadcrumb } from "react-bootstrap";
+import React, { useEffect, useState,useContext } from 'react';
+import { Table, Button, Card, Row, Col, Modal, Toast } from "react-bootstrap";
 import { deleteData, getData, postData } from '../Service/Service.js';
 import '../Service/Main.css'
 import { AgGridReact } from 'ag-grid-react';
@@ -12,9 +12,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import Spinner from 'react-bootstrap/Spinner';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
 // import './Main.css'; 
-
+import { MyContext } from '../MyContextProvider.js';
 
 const Project = () => {
+    const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
     const [projectList, setprojectList] = useState([]);
     const [UserList, setUserList] = useState([]);
     const [projectObj, setprojectObj] = useState({
@@ -33,6 +34,24 @@ const Project = () => {
         createdByUserName: ""
     })
 
+    const notify = (message, classN) => {
+        return new Promise((resolve) => {
+            const className = `toast-${classN}`;
+            toast(message, {
+                className: className,
+                autoClose: 2000,
+                position: "top-center",
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                onClose: () => resolve(), // Resolve the promise when the toast is closed
+            });
+        });
+    };
+
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => {
@@ -41,8 +60,8 @@ const Project = () => {
     };
 
     const [isLoading, setIsLoading] = useState(true);
+
     const handleModalClick = (e) => {
-        // Prevent click events from propagating to parent elements
         e.stopPropagation();
     };
 
@@ -62,11 +81,11 @@ const Project = () => {
                     setIsLoading(false);
                 }
                 else {
-                    toast.error('Something went wrong');
+                    notify('Something went wrong');
                     setIsLoading(false);
                 }
             } catch (error) {
-                toast.error(error);
+                notify(error);
             }
 
             const projectsWithSerialNumbers = addSerialNumbers(result);
@@ -111,23 +130,37 @@ const Project = () => {
             deleteData('DeleteProjectById?id=', projectData.projectId).then(result => {
                 debugger
                 if (result != undefined) {
-                    toast.success(result.message);
-                    getProjectList();
+                    notify(result.message);
+                    // getProjectList();
                 }
             })
         } catch (error) {
-            toast.error(error);
+            notify(error);
         }
     }
 
+    // const [colDefs, setColDefs] = useState([
+    //     { field: "Srno", headerName: "Sr No", cellStyle: { textAlign: 'center' } },
+    //     { field: "fullName", headerName: "Full Name", cellStyle: { textAlign: 'center' } },
+    //     { field: "leadingByUserName", headerName: "Leading By User Name", cellStyle: { textAlign: 'center' } },
+    //     { field: "technologyStack", headerName: "Technology Stack", cellStyle: { textAlign: 'center' } },
+    //     { field: "createdByUserName", headerName: "Created By User Name", cellStyle: { textAlign: 'center' } },
+    //     { field: "Action", headerName: "Action", cellRenderer: CustomButtonComponent }
+        
+    // ]);
     const [colDefs, setColDefs] = useState([
-        { field: "Srno", headerName: "Sr No", cellStyle: { textAlign: 'center' } },
-        { field: "fullName", headerName: "Full Name", cellStyle: { textAlign: 'center' } },
-        { field: "leadingByUserName", headerName: "Leading By User Name", cellStyle: { textAlign: 'center' } },
-        { field: "technologyStack", headerName: "Technology Stack", cellStyle: { textAlign: 'center' } },
-        { field: "createdByUserName", headerName: "Created By User Name", cellStyle: { textAlign: 'center' } },
-        { field: "Action", headerName: "Action", cellRenderer: CustomButtonComponent }
-    ]);
+        {
+          field: "Srno",
+          flex: 0.5,
+          headerName: "Sr No",
+          cellStyle: { textAlign: "center" },
+        },
+        { field: "fullName", flex: 1 },
+        { field: "leadingByUserName", flex: 1 },
+        { field: "technologyStack", flex: 1 },
+        { field: "createdByUserName", flex: 1 },
+        { field: "Action", cellRenderer: CustomButtonComponent, flex: 0.5 },
+      ]);
 
 
     const handleChange = (event, key) => {
@@ -139,12 +172,12 @@ const Project = () => {
         try {
             postData('CreateProject', projectObj).then(result => {
                 if (result != undefined) {
-                    toast.success(result.message);
-                    getProjectList();
+                    notify(result.message);
+                    // getProjectList();
                 }
             })
         } catch (error) {
-            toast.error(error);
+            notify(error);
         }
         resetProjectObj();
         setShow(false);
@@ -154,12 +187,12 @@ const Project = () => {
         try {
             postData('UpdateProject', projectObj).then(result => {
                 if (result != undefined) {
-                    toast.success(result.message);
-                    getProjectList();
+                    notify(result.message);
+                    // getProjectList();
                 }
             })
         } catch (error) {
-            toast.error(error);
+            notify(error);
         }
         resetProjectObj();
         setShow(false);
@@ -185,17 +218,16 @@ const Project = () => {
 
 
     return (
+        <>
+         <div className='mt-5'></div>
         <div className='container-fluid'>
+          {/* =  {loggedUserData.emailId} */}
             <div >
                 <Card >
-                    <Breadcrumb>
-                        <Breadcrumb.Item href="#">Glitch Found</Breadcrumb.Item>
-                        <Breadcrumb.Item href="#">Pages</Breadcrumb.Item>
-                        <Breadcrumb.Item active>Project List</Breadcrumb.Item>
-                    </Breadcrumb>
+                   
                     <Card.Header className="d-flex justify-content-between ">
                         <h4>Project List</h4>
-                        <Button onClick={handleShow}><FontAwesomeIcon icon={faPlus} />Add New</Button>
+                        <Button onClick={handleShow}>Add New <FontAwesomeIcon icon={faPlus} /></Button>
                     </Card.Header>
                     <Card.Body>{
                         isLoading ?
@@ -217,15 +249,10 @@ const Project = () => {
                                 <AgGridReact
                                     rowData={projectList}
                                     columnDefs={colDefs}
-                                    headerClass="header-center"
                                     pagination={true}
                                     paginationPageSize={7}
                                     paginationPageSizeSelector={[7, 10, 20, 25]}
-                                    domLayout="autoHeight"
-                                    suppressHorizontalScroll={true}
-                                    defaultColDef={{
-                                        cellStyle: { textAlign: 'center' }
-                                    }}
+                                   
                                 />
                             </div>}
                     </Card.Body>
@@ -249,7 +276,7 @@ const Project = () => {
                         </Modal.Header>
                         <Modal.Body>
                             <div >
-                                <div >
+                                <div>
                                     <div className='card-body'>
                                         <div className='row'>
                                             <div className='col-md-6'>
@@ -429,6 +456,8 @@ const Project = () => {
             </div>
 
         </div>
+        </>
+       
 
     );
 };

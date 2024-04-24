@@ -37,6 +37,24 @@ const User = () => {
     fullName: "",
   });
 
+  const notify = (message, classN) => {
+    return new Promise((resolve) => {
+        const className = `toast-${classN}`;
+        toast(message, {
+            className: className,
+            autoClose: 2000,
+            position: "top-center",
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            onClose: () => resolve(), // Resolve the promise when the toast is closed
+        });
+    });
+};
+
   const getUsers = () => {
     getData(GET_ALL_USERS).then((result) => {
       setUserList(result);
@@ -121,10 +139,10 @@ const User = () => {
     deleteData(DELETE_USER_BY_ID, user.userId).then((result) => {
       if (result !== undefined) {
         if (result.result) {
-          alert("User deleted successfully");
-          getUsers();
+          notify("User deleted successfully");
+          // getUsers();
         } else {
-          alert(result.message);
+          notify(result.message);
         }
       }
     });
@@ -142,11 +160,11 @@ const User = () => {
     ) {
       postData(CREATE_USER, userData).then((result) => {
         if (result.result) {
-          toast.success("User created successfully");
-          getUsers();
-          closeModal();
+          notify("User created successfully");
+          // getUsers();
+          // closeModal();
         } else {
-          alert(result.message);
+          notify(result.message);
         }
       });
     }
@@ -164,11 +182,11 @@ const User = () => {
     ) {
       postData(UPDATE_USER, userData).then((result) => {
         if (result.result) {
-          toast.success("User updated successfully");
-          getUsers();
+          notify("User updated successfully");
+          // getUsers();
           closeModal();
         } else {
-          alert(result.message);
+          notify(result.message);
         }
       });
     }
@@ -190,7 +208,8 @@ const User = () => {
 
   return (
     <div>
-      <div className="row mt-3">
+       <div className='row mt-5'></div>
+      <div className="row">
         <div className="col-md-12">
           <div className="card bg-light my-2 mx-4">
             <div className="card-header bg-light">

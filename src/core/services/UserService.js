@@ -31,7 +31,7 @@ const createUser = async (data) => {
   try {
     debugger
     const response = await axios.post(`${API_URL}${CREATE_USER}`, data);
-    debugger;
+    
     return response.data;
   } catch (error) {
     alert("API Error");
@@ -49,9 +49,9 @@ const updateUser = async (data) => {
 
 const deleteUserById = async (userId) => {
   try {
-    debugger;
+    
     const response = await axios.post(`${API_URL}${DELETE_USER_BY_ID}` + userId);
-    debugger;
+    
     return response.data;
   } catch (error) {
     alert("API Error");

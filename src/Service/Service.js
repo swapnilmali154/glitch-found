@@ -10,6 +10,16 @@ const getData = async (endpoint) => {
     }
 
 }
+const getDataById = async (endpoint) => {
+    
+    try {
+        const result = await axios.get(`${url}${endpoint}`);
+        return result.data.data;
+    } catch (error) {
+        alert(error);
+    }
+
+}
 const postData = async (endpoint, obj) => {
     try {
         const result = await axios.post(`${url}${endpoint}`, obj);
@@ -20,9 +30,9 @@ const postData = async (endpoint, obj) => {
 }
 
 const deleteData = async (endpoint, id) => {
-    debugger
+    
     try {
-        debugger
+        
         const result = await axios.get(`${url}${endpoint}${id}`);
         return result.data;
     } catch (error) {
@@ -30,4 +40,4 @@ const deleteData = async (endpoint, id) => {
     }
 }
 
-export { getData, postData, deleteData }
+export { getData, postData, deleteData,getDataById }

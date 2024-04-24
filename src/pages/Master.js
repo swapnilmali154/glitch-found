@@ -9,6 +9,8 @@ import { Breadcrumbs } from '../App.js';
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import '../index.css'
+import Spinner from 'react-bootstrap/Spinner';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
 const Master = () => {
     const [activeButton, setActiveButton] = useState(null);
     const [rowData, setRowData] = useState([]);
@@ -51,7 +53,7 @@ const Master = () => {
     const handleModal1Open = () => {
         resetIssueType();
         setShowModal1(true);
-        //debugger;
+        //
     };
 
     const handleModal1Close = () => {
@@ -135,11 +137,11 @@ const Master = () => {
     //****** For ADD Button */
     const displayModal = () => {
         if (activeButton == 1) {
-            //debugger;
+            //
             handleModal1Open();
         }
         else if (activeButton == 2) {
-            //debugger;
+            //
             handleModal2Open();
         }
     }
@@ -265,7 +267,7 @@ const Master = () => {
     //************ Delete Issue Status by Id */
 
     const onDelete = async (data) => {
-        //debugger;
+        //
         if (data.statusId) {
             try {
 
@@ -300,7 +302,10 @@ const Master = () => {
 
 
     }
-
+    useEffect(() => {
+        // Trigger button click for Ticket Type upon page load
+        handleButtonClick(2);
+    }, []); 
     useEffect(() => {
         getissueSatusList();
         getIssueTypeList();
@@ -428,13 +433,15 @@ const Master = () => {
 
             default:
                 setColumnDefs([]);
-                setRowData([]);
+                setRowData(issueStatusList);
                 setLoading(false);
         }
     };
 
     return (
-        <div>
+        <>
+        <div className='mt-5'></div>
+         <div>
             <ButtonGroup>
                 <Button
                     variant={activeButton === 1 ? 'primary' : 'secondary'}
@@ -473,8 +480,8 @@ const Master = () => {
                                                     paginationPageSize={5}
                                                     paginationPageSizeSelector={[5, 10, 25]}
                                                     defaultColDef={defaultColDef}
-                                                    overlayLoadingTemplate={loading ? '<div className="ag-overlay-loading-center">Loading...</div>' : null}
-                                                    overlayNoRowsTemplate={loading ? '<div className="ag-overlay-loading-center">No data available</div>' : null}
+                                                    overlayLoadingTemplate={loading ? <div className="ag-overlay-loading-center">Loading...</div> : null}
+                                                    overlayNoRowsTemplate={loading ? <div className="ag-overlay-loading-center">No data available</div> : null} 
                                                     frameworkComponents={{ CustomHeaderComponent }}
                                                    // defaultColDef={{ headerComponent: 'CustomHeaderComponent' }}
                                                 />
@@ -639,6 +646,8 @@ const Master = () => {
 
             />
         </div>
+        </>
+       
     );
 }
 

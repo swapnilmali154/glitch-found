@@ -1,20 +1,57 @@
-.button-cell {
-    display: flex;
-    gap: 5px;
+.project-model a {
+    font-size: 10px;
 }
-.main-container {
-    margin-top: 2px; 
+
+.status p {
+    font-size: 10px;
 }
 
 
-  /* Center-align row headers and data */
-.ag-cell, .ag-header-cell {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .ag-cell, .ag-header-cell {
-    white-space: pre-wrap; /* Allow wrapping of text */
-    word-break: break-word; /* Break long words */
-  }
-  
+
+.inputbg:hover {
+    background-color: rgb(235, 229, 229) !important;
+}
+
+.form-control:hover {
+    background-color: rgb(235, 229, 229) !important;
+}
+
+.form-select:hover {
+    background-color: rgb(235, 229, 229) !important;
+}
+.rounded-circle {
+    width: 12%;
+    padding: 7px 0;
+}
+
+label {
+    font-size: 14px;
+    font-weight: bold;
+    color: grey;
+}
+input[type="file"] {
+display: none;
+}
+.custom-file-upload { 
+display: inline-block;
+padding: 6px 12px;
+cursor: pointer;
+color: #0747a6 !important;
+}
+.logUser {
+    position: absolute;
+right: 20px !important;
+}
+.mynav  {
+background-color: #0747a6!important;
+color: #fff!important;
+}
+.content-hover:hover {
+background-color: #033681!important;
+}
+.nav-link, .navbar-brand {
+color: #fff!important;
+}
+.navbar-nav .dropdown:hover .dropdown-menu {
+    display: block;
+}

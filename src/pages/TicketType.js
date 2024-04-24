@@ -135,84 +135,86 @@ const TicketType = () => {
 
 
     return (
-        <div>
+        <>
+        <div className='mt-5'></div>
+         <div>
+<div className="row mt-3 container-fluid">
+    <div className="row mt-3">
+        <div className="col-md-12">
+            <Card>
+                <Card.Header className="d-flex justify-content-between">
+                    <h4> Issue Type List</h4>
+                    <Button onClick={handleShow}>Add New</Button>
+                </Card.Header>
+                <Card.Body className="d-flex justify-content-center align-items-center">
+                    <div
+                        className="ag-theme-quartz" style={{ height: 450, width: '60%' ,justifyContent: 'center',textAlign: 'center' }}  
+                    >
+                        <AgGridReact
+                            rowData={issueTypeList}
+                            columnDefs={colDefs}
+                            headerClass="header-center"
+                            pagination={true}
+                            paginationPageSize={7}
+                            paginationPageSizeSelector={[7,10, 20, 25]}
+                        />
+                    </div>
+                </Card.Body>
+                <Card.Footer>
 
-            <div className="row mt-3 container-fluid">
+                </Card.Footer>
+            </Card>
+        </div></div>
+</div>
+<div className="col-md-12">
+    <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton className="bg-light">
+            <Modal.Title>
+                {issueTypeObj.issueTypeId === 0 ? "Add Issue Type" : "Update Issue Type"}
+            </Modal.Title>
 
-                <div className="row mt-3">
-                    <div className="col-md-12">
-                        <Card>
-                            <Card.Header className="d-flex justify-content-between">
-                                <h4> Issue Type List</h4>
-                                <Button onClick={handleShow}>Add New</Button>
-                            </Card.Header>
-                            <Card.Body className="d-flex justify-content-center align-items-center">
-                                <div
-                                    className="ag-theme-quartz" style={{ height: 450, width: '60%' ,justifyContent: 'center',textAlign: 'center' }}  
-                                >
-                                    <AgGridReact
-                                        rowData={issueTypeList}
-                                        columnDefs={colDefs}
-                                        headerClass="header-center"
-                                        pagination={true}
-                                        paginationPageSize={7}
-                                        paginationPageSizeSelector={[7,10, 20, 25]}
-                                    />
-                                </div>
-                            </Card.Body>
-                            <Card.Footer>
+        </Modal.Header>
+        <Modal.Body>
+            <div>
+                <div>
+                    <div>
+                        <div className="row">
 
-                            </Card.Footer>
-                        </Card>
-                    </div></div>
-            </div>
-            <div className="col-md-12">
-                <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton className="bg-light">
-                        <Modal.Title>
-                            {issueTypeObj.issueTypeId === 0 ? "Add Issue Type" : "Update Issue Type"}
-                        </Modal.Title>
-
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div>
-                            <div>
-                                <div>
-                                    <div className="row">
-
-                                        <div className='col-md-6'>
-                                            <label>Issue Type </label>
-                                            <input type="text" className='form-control my-2' placeholder='Enter Issue Type'
-                                                value={issueTypeObj.issueType} onChange={(event) => handleChange(event, 'issueType')} />
-                                            {
-                                                validationerror && issueTypeObj.issueType == '' && <div className='text-danger'>
-                                                    This field is required
-                                                </div>
-                                            }
-                                        </div>
+                            <div className='col-md-6'>
+                                <label>Issue Type </label>
+                                <input type="text" className='form-control my-2' placeholder='Enter Issue Type'
+                                    value={issueTypeObj.issueType} onChange={(event) => handleChange(event, 'issueType')} />
+                                {
+                                    validationerror && issueTypeObj.issueType == '' && <div className='text-danger'>
+                                        This field is required
                                     </div>
-
-                                </div>
+                                }
                             </div>
                         </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        {issueTypeObj.issueTypeId === 0 && (
-                            <Button className="btn btn-sm btn-primary m-2" onClick={saveIssueType}>Add</Button>
-                        )}
-                        {issueTypeObj.issueTypeId !== 0 && (
-                            <Button className="btn btn-sm btn-primary m-2" onClick={UpdateIssueType}>Update</Button>
-                        )}
-                        <Button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => setShow(false)}
-                        >
-                            Cancel
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
+
+                    </div>
+                </div>
             </div>
-        </div>
+        </Modal.Body>
+        <Modal.Footer>
+            {issueTypeObj.issueTypeId === 0 && (
+                <Button className="btn btn-sm btn-primary m-2" onClick={saveIssueType}>Add</Button>
+            )}
+            {issueTypeObj.issueTypeId !== 0 && (
+                <Button className="btn btn-sm btn-primary m-2" onClick={UpdateIssueType}>Update</Button>
+            )}
+            <Button
+                className="btn btn-sm btn-danger"
+                onClick={() => setShow(false)}
+            >
+                Cancel
+            </Button>
+        </Modal.Footer>
+    </Modal>
+</div>
+</div>
+        </>
+       
     );
 };
 
