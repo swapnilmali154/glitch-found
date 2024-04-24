@@ -89,11 +89,11 @@ const Master = () => {
                     setIssueTypeList(result);
                 }
                 else {
-                    // notify("Something Wrong", 'error');;
+                    
                     toast.error("Something Wrong");
                 }
             } catch (error) {
-                // notify(error, 'error');
+                
                 toast.error(error);
             }
 
@@ -108,13 +108,12 @@ const Master = () => {
                     setIssueStatus(result);
                 }
                 else {
-                    // notify("Something Wrong", 'error');
+                 
                     toast.error("Something Wrong");
                 }
             })
         } catch (error) {
-            // alert(error);
-
+        
             toast.error(error);
         }
 
@@ -284,9 +283,7 @@ const Master = () => {
 
                 toast.error(error);
             }
-            finally{
-               // toast.error("Network Error")
-            }
+        
         }
         else if (data.issueTypeId) {
 
