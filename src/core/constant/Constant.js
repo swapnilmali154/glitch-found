@@ -12,5 +12,5 @@ export const ADD_NEW_STATUS="AddNewStatus"
 export const UPDATE_STATUS="UpdateStatus";
 export const DELETE_STATUS_BY_ID="DeleteStatusById?id=";
 export const ADD_NEW_TYPE="AddNewType"
-export const DELETE_ISSUE_TYPE_BY_ID="DeleteIssueTypeById"
+export const DELETE_ISSUE_TYPE_BY_ID="DeleteIssueTypeById?id="
 export const UPDATE_ISSUE_TYPE="UpdateIssueType"
