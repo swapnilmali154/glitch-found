@@ -71,6 +71,7 @@ const FilterIssue = () => {
             setProjectUser(projectUserResponse.data.data);
             setissueType(issueTypeResponse.data.data);
             setalluser(allUserResponse.data.data);
+            setFilteredData(issueResponse.data.data);
         };
 
         fetchData();
@@ -92,7 +93,7 @@ const FilterIssue = () => {
             width: 100,
             suppressSizeToFit: true,
         },
-        { headerName: "Name", field: "status" },
+        { headerName: "Status", field: "status" },
         { headerName: "Created By UserName", field: "createdByUserName" },
         { headerName: "Summary", field: "summary", width: 150, cellRenderer: 'summaryCellRenderer' },
         { headerName: "Description", field: "description", width: 150, cellRenderer: 'descriptionCellRenderer' }
@@ -116,7 +117,7 @@ const FilterIssue = () => {
                                 <label>StatusID</label>
 
                                 <select className='form-select' onChange={(event) => { onCangeSelect(event, 'statusId') }}> 
-                                <option>select ID</option>                                                    {
+                                <option>Select status</option>                                                    {
                                     IssueList.map((sid) => {
                                         return (<option value={sid.statusId}>{sid.status}</option>)
                                     })
@@ -127,7 +128,7 @@ const FilterIssue = () => {
                                 <label>Issue Type</label>
                               
                                 <select className='form-select' onChange={(event) => { onCangeSelect(event, 'issueTypeId') }}>
-                                <option>Issue Type</option> 
+                                <option>Select Type</option> 
                                     {
                                         issuetype.map((issue) => {
                                             return (<option value={issue.issueTypeId}>{issue.issueType}</option>)
@@ -138,7 +139,7 @@ const FilterIssue = () => {
                             <div className='col-2'>
                                 <label>Assigned To</label>
                                 <select className='form-select' onChange={(event) => { onCangeSelect(event, 'assignedTo') }}>
-                                    
+                                <option>Select Assigned</option> 
                                     {
                                         alluser.map((sid) => {
                                             return (<option value={sid.userId}>{sid.fullName}</option>)
@@ -150,6 +151,7 @@ const FilterIssue = () => {
                             <div className='col-2'>
                                 <label>Project Name</label>
                                 <select className='form-select' onChange={(event) => { onCangeSelect(event, 'projectId') }}>
+                                <option>Select Project</option> 
                                     {
                                         projectuser.map((project) => {
                                             return (<option value={project.projectId}>{project.projectName}</option>)
@@ -160,6 +162,7 @@ const FilterIssue = () => {
                             <div className='col-2'>
                                 <label>Reporter</label>
                                 <select className='form-select' onChange={(event) => { onCangeSelect(event, 'reporter') }}>
+                                <option>Select Reporter</option> 
                                     {
                                         projectuser.map((project) => {
                                             return (<option value={project.userId}>{project.fullName}</option>)
