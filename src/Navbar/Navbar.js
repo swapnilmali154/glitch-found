@@ -34,7 +34,7 @@ const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
     const handleProjectSelect = (projectId, shortName) => {
         debugger
         setSelectedProject({ projectId, shortName });
-        navigate(`/board/${projectId}`);
+        navigate(`/board/${projectId}/${encodeURIComponent(shortName)}`);
        // navigate(`/board:/${projectId}`);
         setShowDropdown(false);
     };
@@ -171,12 +171,12 @@ const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
 </nav>) 
 }
           
-            {selectedProject && (
+            {/* {selectedProject && (
                 <div className='text-start mt-3'>
                     <p> {selectedProject.projectId}</p>
                     <h5>{selectedProject.shortName}</h5>
                 </div>
-            )}
+            )} */}
 
             
             <ModalDialog Show={showModal} hide={setShowModal} />
