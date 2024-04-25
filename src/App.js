@@ -9,12 +9,13 @@ import TicketStatus from './pages/TicketStatus';
 import TicketType from './pages/TicketType';
 import Master from './pages/Master';
 import {MyContextProvider, MyContext} from './MyContextProvider'
-import { NavDropdown } from 'react-bootstrap'
 import Navbar from './Navbar/Navbar';
 import Board from './pages/Board';
 import ModalDialog from './pages/ModalDialog';
 import Login from './pages/Login';
 import FilterIssue from './pages/FilterIssue';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export function Breadcrumbs() {
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter((x) => x);
@@ -50,8 +51,20 @@ function App() {
     <div className="App">
       <MyContextProvider>
         <BrowserRouter>
+        <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      
       <Navbar/>
-        <div classNameName="App">
+       
          
           {/* <Breadcrumbs /> */}
           <Routes>
@@ -71,10 +84,10 @@ function App() {
             <Route path="/login" element={<Login/>}></Route>
             <Route path="/filterIssue" element={<FilterIssue/>}></Route>
           </Routes>
-        </div>
+      
       </BrowserRouter>
       </MyContextProvider>
-      
+     
     </div>
   );
 }

@@ -14,7 +14,7 @@ import { FaEdit } from "react-icons/fa";
 import { FaTrash } from "react-icons/fa";
 import { AgGridReact } from "ag-grid-react";
 import { FaUser } from "react-icons/fa";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const User = () => {
@@ -139,7 +139,8 @@ const User = () => {
     deleteData(DELETE_USER_BY_ID, user.userId).then((result) => {
       if (result !== undefined) {
         if (result.result) {
-          notify("User deleted successfully");
+        //  notify("User deleted successfully");
+          toast.success("User deleted successfully")
           // getUsers();
         } else {
           notify(result.message);
@@ -160,11 +161,20 @@ const User = () => {
     ) {
       postData(CREATE_USER, userData).then((result) => {
         if (result.result) {
-          notify("User created successfully");
+         // notify("User created successfully");
+          toast.success(result.message, {
+            onClose: () => {
+                setTimeout(() => {
+                  closeModal();
+
+                }, 1000); // Adjust the delay as needed
+            },
+        });
           // getUsers();
           // closeModal();
         } else {
-          notify(result.message);
+         // notify(result.message);
+          toast.error(result.message)
         }
       });
     }
@@ -182,11 +192,19 @@ const User = () => {
     ) {
       postData(UPDATE_USER, userData).then((result) => {
         if (result.result) {
-          notify("User updated successfully");
+        //  notify("User updated successfully");
+          toast.success(result.message, {
+            onClose: () => {
+                setTimeout(() => {
+                  closeModal();
+
+                }, 1000); // Adjust the delay as needed
+            },
+        });
           // getUsers();
-          closeModal();
+         
         } else {
-          notify(result.message);
+          toast.error(result.message);
         }
       });
     }
@@ -403,13 +421,13 @@ const User = () => {
             </Button>
           </Modal.Footer>
         </Modal>
-        <ToastContainer
+        {/* <ToastContainer
           position="top-right"
           autoClose={1000}
           closeButton={false}
           theme="light"
         />
-        <ToastContainer />
+        <ToastContainer /> */}
       </div>
     </div>
   );

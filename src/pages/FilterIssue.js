@@ -9,6 +9,7 @@ const FilterIssue = () => {
     const [IssueList, setIssueList] = useState([]);
     const [projectuser, setProjectUser] = useState([]);
     const [issuetype, setissueType] = useState([]);
+    const [issueStatus, setIssueStatus] = useState([]);
     const [alluser, setalluser] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
 
@@ -24,9 +25,9 @@ const FilterIssue = () => {
     const onCangeSelect = (event, key) => {
         setFilterObj({ [key]: event.target.value });
     }
-
+/**************************  Filter Logic ***********8 */
     const getfilter = async () => {
-        
+
         const response = await axios.post("https://onlinetestapi.gerasim.in/api/Glitch/GetIssuesByFilter", filterobj);
 
         if (response.data.result) {
@@ -60,14 +61,16 @@ const FilterIssue = () => {
             }
         }
     }
-
+/************ Get ALL API */
     useEffect(() => {
         const fetchData = async () => {
             const issueResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssues");
+            const issueStatus = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssueStatus");
             const projectUserResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllProjectUsers");
             const issueTypeResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssueTypes");
             const allUserResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllUsers");
             setIssueList(issueResponse.data.data);
+            setIssueStatus(issueStatus.data.data);
             setProjectUser(projectUserResponse.data.data);
             setissueType(issueTypeResponse.data.data);
             setalluser(allUserResponse.data.data);
@@ -76,7 +79,7 @@ const FilterIssue = () => {
 
         fetchData();
     }, []);
-
+/************ For large Data in Summary and Description filed */
     const summaryCellRenderer = (params) => {
         return <div className="scrollable-cell">{params.value}</div>;
     };
@@ -84,7 +87,7 @@ const FilterIssue = () => {
     const descriptionCellRenderer = (params) => {
         return <div className="scrollable-cell">{params.value}</div>;
     };
-
+/*******  Set Column *****************/
     const colDefs = [
         {
             headerName: "Sr.No",
@@ -98,110 +101,110 @@ const FilterIssue = () => {
         { headerName: "Summary", field: "summary", width: 150, cellRenderer: 'summaryCellRenderer' },
         { headerName: "Description", field: "description", width: 150, cellRenderer: 'descriptionCellRenderer' }
     ];
-
+/****** for full sidth of table  */
     const defaultColDef = {
         flex: 1,
     };
 
     return (
-    <>
-     <div className='row mt-5'></div>
-        <div className="container-fluid">
-            <Card>
-                <Card.Header className="d-flex justify-content-between">
-                    <div className='row'>
-
-                        {/* Other select options */}
+        <>
+            <div className='row mt-5'></div>
+            <div className="container-fluid">
+                <Card>
+                    <Card.Header className="d-flex justify-content-between">
                         <div className='row'>
-                            <div className='col-2'>
-                                <label>StatusID</label>
 
-                                <select className='form-select' onChange={(event) => { onCangeSelect(event, 'statusId') }}> 
-                                <option>Select status</option>                                                    {
-                                    IssueList.map((sid) => {
-                                        return (<option value={sid.statusId}>{sid.status}</option>)
-                                    })
-                                }
-                                </select>
-                            </div>
-                            <div className='col-2'>
-                                <label>Issue Type</label>
-                              
-                                <select className='form-select' onChange={(event) => { onCangeSelect(event, 'issueTypeId') }}>
-                                <option>Select Type</option> 
-                                    {
-                                        issuetype.map((issue) => {
-                                            return (<option value={issue.issueTypeId}>{issue.issueType}</option>)
-                                        })
-                                    }
-                                </select>
-                            </div>
-                            <div className='col-2'>
-                                <label>Assigned To</label>
-                                <select className='form-select' onChange={(event) => { onCangeSelect(event, 'assignedTo') }}>
-                                <option>Select Assigned</option> 
-                                    {
-                                        alluser.map((sid) => {
-                                            return (<option value={sid.userId}>{sid.fullName}</option>)
-                                        })
-                                    }
-                                </select>
-                            </div>
+                            {/* Other select options */}
+                            <div className='row'>
+                                <div className='col-2'>
+                                    <label><strong>StatusID</strong></label>
 
-                            <div className='col-2'>
-                                <label>Project Name</label>
-                                <select className='form-select' onChange={(event) => { onCangeSelect(event, 'projectId') }}>
-                                <option>Select Project</option> 
-                                    {
-                                        projectuser.map((project) => {
-                                            return (<option value={project.projectId}>{project.projectName}</option>)
-                                        })
-                                    }
-                                </select>
-                            </div>
-                            <div className='col-2'>
-                                <label>Reporter</label>
-                                <select className='form-select' onChange={(event) => { onCangeSelect(event, 'reporter') }}>
-                                <option>Select Reporter</option> 
-                                    {
-                                        projectuser.map((project) => {
-                                            return (<option value={project.userId}>{project.fullName}</option>)
-                                        })
-                                    }
-                                </select>
-                            </div>
-                            <div className='col-2'>
-                                <label>Enter Text </label>
-                                <input type="search" placeholder='Enter text' className='form-control' onChange={(event) => { onCangeSelect(event, 'searchText') }} />
+                                    <select className='form-select' onChange={(event) => { onCangeSelect(event, 'statusId') }}>
+                                        <option>Select status</option>                                                    {
+                                            issueStatus.map((sid) => {
+                                                return (<option value={sid.statusId}>{sid.status}</option>)
+                                            })
+                                        }
+                                    </select>
+                                </div>
+                                <div className='col-2'>
+                                    <label><strong>Issue Type</strong></label>
+
+                                    <select className='form-select' onChange={(event) => { onCangeSelect(event, 'issueTypeId') }}>
+                                        <option>Select Type</option>
+                                        {
+                                            issuetype.map((issue) => {
+                                                return (<option value={issue.issueTypeId}>{issue.issueType}</option>)
+                                            })
+                                        }
+                                    </select>
+                                </div>
+                                <div className='col-2'>
+                                    <label><strong>Assigned To</strong></label>
+                                    <select className='form-select' onChange={(event) => { onCangeSelect(event, 'assignedTo') }}>
+                                        <option>Select Assigned</option>
+                                        {
+                                            alluser.map((sid) => {
+                                                return (<option value={sid.userId}>{sid.fullName}</option>)
+                                            })
+                                        }
+                                    </select>
+                                </div>
+
+                                <div className='col-2'>
+                                    <label><strong>Project Name</strong></label>
+                                    <select className='form-select' onChange={(event) => { onCangeSelect(event, 'projectId') }}>
+                                        <option>Select Project</option>
+                                        {
+                                            projectuser.map((project) => {
+                                                return (<option value={project.projectId}>{project.projectName}</option>)
+                                            })
+                                        }
+                                    </select>
+                                </div>
+                                <div className='col-2'>
+                                    <label><strong>Reporter</strong></label>
+                                    <select className='form-select' onChange={(event) => { onCangeSelect(event, 'reporter') }}>
+                                        <option>Select Reporter</option>
+                                        {
+                                            projectuser.map((project) => {
+                                                return (<option value={project.userId}>{project.fullName}</option>)
+                                            })
+                                        }
+                                    </select>
+                                </div>
+                                <div className='col-2'>
+                                    <label><strong>Enter Text</strong> </label>
+                                    <input type="search" placeholder='Enter text' className='form-control' onChange={(event) => { onCangeSelect(event, 'searchText') }} />
+                                </div>
+
                             </div>
 
                         </div>
-
-                    </div>
-                    <div className='row'>
-                        <div className='col-2 d-flex justify-content-end'>
-                            <button className="btn btn-success mt-3" onClick={getfilter} style={{ height: 40 }}>Search</button>
+                        <div className='row'>
+                            <div className='col-2 d-flex justify-content-end'>
+                                <button className="btn btn-success mt-3" onClick={getfilter} style={{ height: 40 }}>Search</button>
+                            </div>
                         </div>
-                    </div>
-                </Card.Header>
-                <Card.Body className="d-flex justify-content-center align-items-center">
-                    <div className="ag-theme-quartz" style={{ height: 500, width: '100%' }}>
-                        <AgGridReact
-                            rowData={filteredData}
-                            columnDefs={colDefs}
-                            defaultColDef={defaultColDef}
-                            pagination={true}
-                            paginationPageSize={5}
-                            paginationPageSizeSelector={[5, 10, 25]}
-                            frameworkComponents={{ summaryCellRenderer, descriptionCellRenderer }}
-                        />
-                    </div>
-                </Card.Body>
-                <Card.Footer></Card.Footer>
-            </Card>
-        </div>
-    </>
-       
+                    </Card.Header>
+                    <Card.Body className="d-flex justify-content-center align-items-center">
+                        <div className="ag-theme-quartz" style={{ height: 500, width: '100%' }}>
+                            <AgGridReact
+                                rowData={filteredData}
+                                columnDefs={colDefs}
+                                defaultColDef={defaultColDef}
+                                pagination={true}
+                                paginationPageSize={5}
+                                paginationPageSizeSelector={[5, 10, 25]}
+                                frameworkComponents={{ summaryCellRenderer, descriptionCellRenderer }}
+                            />
+                        </div>
+                    </Card.Body>
+                    <Card.Footer></Card.Footer>
+                </Card>
+            </div>
+        </>
+
     );
 };
 
