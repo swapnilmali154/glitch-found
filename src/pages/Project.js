@@ -7,17 +7,16 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Spinner from 'react-bootstrap/Spinner';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
-// import './Main.css'; 
 import { MyContext } from '../MyContextProvider.js';
 
 const Project = () => {
     const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
     const [projectList, setprojectList] = useState([]);
-    const [UserList, setUserList] = useState([]);
+    const [userList, setUserList] = useState([]);
     const [projectObj, setprojectObj] = useState({
         projectId: 0,
         projectLogo: "",
@@ -64,11 +63,25 @@ const Project = () => {
     const handleModalClick = (e) => {
         e.stopPropagation();
     };
-
+    const getUserList = () => {
+        try {
+            getData('GetAllUsers').then(result => {
+                if (result != undefined) {
+                    setUserList(result);
+                }
+                else {
+                    alert('Error in fetching user List');
+                }
+            })
+        } catch (error) {
+            alert(error);
+        }
+    }
     const [validationerror, setvalidationerror] = useState(false);
 
     useEffect(() => {
         getProjectList();
+        getUserList();
 
     }, []);
 
@@ -168,14 +181,13 @@ const Project = () => {
     }
 
     const saveProject = () => {
-        debugger
         try {
             postData('CreateProject', projectObj).then(result => {
-                if (result != undefined) {
-                    notify(result.message);
-                    // getProjectList();
+                if (result !== undefined) {
+                   // toast.success('Project Saved Successfully...!');
+                    getProjectList();
                 }
-            })
+            });
         } catch (error) {
             notify(error);
         }
@@ -322,16 +334,16 @@ const Project = () => {
 
                                             <div className='col-md-6'>
                                                 <label>Lead By</label>
-                                                <select className='form-select' value={projectObj.leadBy} onChange={(event) => handleChange(event, 'leadBy')}>
-                                                    <option>Select </option>
-                                                    {
-                                                        projectList.map((project, index) => {
-                                                            return (
-                                                                <option key={project.leadBy} value={project.leadBy}>{project.leadingByUserName}</option>
-                                                            )
-                                                        })
-                                                    }
-                                                </select>
+                                                <select className="form-select"  onChange={(event) => handleChange(event, 'LeadBy')}>
+                                        <option>Select User</option>
+                                        {
+                                            userList.map((user, index) => {
+                                                return (
+                                                    <option value={user.userId}>{user.fullName}</option>
+                                                )
+                                            })
+                                        }
+                                    </select>
                                             </div>
                                         </div>
 
@@ -395,16 +407,16 @@ const Project = () => {
                                         <div className='row my-2'>
                                             <div className='col-md-6'>
                                                 <label>CreatedBy</label>
-                                                <select className='form-select' value={projectObj.createdBy} onChange={(event) => handleChange(event, 'createdBy')}>
-                                                    <option>Select Type</option>
-                                                    {
-                                                        projectList.map((project, index) => {
-                                                            return (
-                                                                <option key={project.createdBy} value={project.createdBy}>{project.createdByUserName}</option>
-                                                            )
-                                                        })
-                                                    }
-                                                </select>
+                                                <select className="form-select"  onChange={(event) => handleChange(event, 'CreatedBy')}>
+                                        <option>Select User</option>
+                                        {
+                                            userList.map((user, index) => {
+                                                return (
+                                                    <option value={user.userId}>{user.fullName}</option>
+                                                )
+                                            })
+                                        }
+                                    </select>
                                             </div>
 
                                             <div className='col-md-6'>
@@ -442,7 +454,7 @@ const Project = () => {
                             </div>
                         </Modal.Footer>
                     </Modal>
-                    <ToastContainer
+                    {/* <ToastContainer
                         position="top-right"
                         autoClose={1000}
                         closeButton={false}
@@ -450,7 +462,8 @@ const Project = () => {
 
                     />
 
-                    <ToastContainer />
+                    <ToastContainer /> */}
+                    
 
                 </div>
             </div>

@@ -96,6 +96,11 @@ const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
                                         Board
                                     </Link>
                                 </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" onClick={()=>setShowModal(true)}>
+                                        Create
+                                    </Link>
+                                </li>
 
                 <li className="nav-item dropdown">
                     <a
@@ -130,10 +135,7 @@ const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
                                 <a
                                     className="dropdown-item"
                                     href="#"
-                                    onClick={() => {
-                                        /* Your logic to handle Create Project */
-                                        setShowDropdown(false);
-                                    }}
+                                    onClick={()=>setShowModal(true)}
                                 >
                                     Create Project
                                 </a>
