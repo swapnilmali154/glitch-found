@@ -132,12 +132,7 @@ const Board = (props) => {
 
     }
     useEffect(() => {
-        console.log('projectId',projectId);
-        getAllIssuesbyProjectId();
-        getProjectList();
-        getIssueTypeList();
-        getStatusList();
-        getUserList();
+     
         const todoIssue = getAllIssues.filter(issue=>issue.status =='To do');
         settoDoissueCount(todoIssue.length);
         const inProgressissues = getAllIssues.filter(issue=>issue.status =='In Progress');
@@ -145,6 +140,15 @@ const Board = (props) => {
         const doneIssues = getAllIssues.filter(issue=>issue.status=='Done');
         setdoneissueCount(doneIssues.length);
     }, [projectId,getAllIssues]);
+    useEffect(() => {
+        console.log('projectId',projectId);
+        getAllIssuesbyProjectId();
+        getProjectList();
+        getIssueTypeList();
+        getStatusList();
+        getUserList();
+       
+    }, []);
     const updateIssue = (e) => {
         e.preventDefault();
        

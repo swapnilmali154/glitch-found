@@ -12,7 +12,7 @@ const FilterIssue = () => {
     const [issueStatus, setIssueStatus] = useState([]);
     const [alluser, setalluser] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-const[isLoading,setisLoading]=useState(false);
+    const[isLoading,setisLoading]=useState(false);
     const [filterobj, setFilterObj] = useState({
         "reporter": 0,
         "assignedTo": 0,
@@ -56,8 +56,16 @@ setisLoading(true);
                 const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllAssignedIssuesByUserId?id=" + filterobj.assignedTo)
                 setFilteredData(result.data.data);
             } else if (filterobj.reporter !== undefined) {
-                const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllAssignedIssuesByUserId?id=" + filterobj.reporter)
-                setFilteredData(result.data.data);
+                //const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllAssignedIssuesByUserId?id=" + filterobj.reporter)
+                //setFilteredData(result.data.data);
+               debugger
+                const filteredArray = [];
+                for (let i = 0; i < IssueList.length; i++) {
+                    if (IssueList[i].reporter ===Number(filterobj.reporter) ) {
+                        filteredArray.push(IssueList[i]);
+                    }
+                }
+                setFilteredData(filteredArray);
             }
         }
         setisLoading(false);
@@ -68,7 +76,7 @@ setisLoading(true);
         const fetchData = async () => {
             const issueResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssues");
             const issueStatus = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssueStatus");
-            const projectUserResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllProjectUsers");
+            const projectUserResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllProject");
             const issueTypeResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssueTypes");
             const allUserResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllUsers");
             setIssueList(issueResponse.data.data);
@@ -109,6 +117,18 @@ setisLoading(true);
         flex: 1,
     };
 
+/*************** Reset Completet form */
+const resetform=()=>{
+    setFilterObj({
+        "reporter": 0,
+        "assignedTo": 0,
+        "statusId": 0,
+        "projectId": 0,
+        "issueTypeId": 0,
+        "searchText": ""
+    })
+    setFilteredData(IssueList);
+}
     return (
         <>
             <div className='row mt-5'></div>
@@ -160,7 +180,7 @@ setisLoading(true);
                                         <option>Select Project</option>
                                         {
                                             projectuser.map((project) => {
-                                                return (<option value={project.projectId}>{project.projectName}</option>)
+                                                return (<option value={project.projectId}>{project.shortName}</option>)
                                             })
                                         }
                                     </select>
@@ -170,8 +190,8 @@ setisLoading(true);
                                     <select className='form-select' onChange={(event) => { onCangeSelect(event, 'reporter') }}>
                                         <option>Select Reporter</option>
                                         {
-                                            projectuser.map((project) => {
-                                                return (<option value={project.userId}>{project.fullName}</option>)
+                                            alluser.map((sid) => {
+                                                return (<option value={sid.userId}>{sid.fullName}</option>)
                                             })
                                         }
                                     </select>
@@ -185,8 +205,11 @@ setisLoading(true);
 
                         </div>
                         <div className='row'>
-                            <div className='col-2 d-flex justify-content-end'>
+                            <div className='col-6 d-flex justify-content-end'>
                                 <button className="btn btn-success mt-3" onClick={getfilter} style={{ height: 40 }}>Search</button>
+                            </div>
+                            <div className='col-6 d-flex justify-content-end'>
+                                <button className="btn btn-secondary  mt-3" onClick={resetform} style={{ height: 40 }}>Reset</button>
                             </div>
                         </div>
                     </Card.Header>
