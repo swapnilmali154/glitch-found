@@ -132,7 +132,16 @@ const Board = (props) => {
 
     }
     useEffect(() => {
-     
+        console.log('projectId',projectId);
+        getAllIssuesbyProjectId();
+        getProjectList();
+        getIssueTypeList();
+        getStatusList();
+        getUserList();
+      
+    }, []);
+    useEffect(() => {
+       
         const todoIssue = getAllIssues.filter(issue=>issue.status =='To do');
         settoDoissueCount(todoIssue.length);
         const inProgressissues = getAllIssues.filter(issue=>issue.status =='In Progress');
@@ -140,15 +149,7 @@ const Board = (props) => {
         const doneIssues = getAllIssues.filter(issue=>issue.status=='Done');
         setdoneissueCount(doneIssues.length);
     }, [projectId,getAllIssues]);
-    useEffect(() => {
-        console.log('projectId',projectId);
-        getAllIssuesbyProjectId();
-        getProjectList();
-        getIssueTypeList();
-        getStatusList();
-        getUserList();
-       
-    }, []);
+   
     const updateIssue = (e) => {
         e.preventDefault();
        
@@ -173,7 +174,6 @@ const Board = (props) => {
             <div className='row mt-3'>
             <h5 className='text-start mb-2'>{shortName}</h5>
                 <div className='col-md-4 mt-3'>
-                
                     <Card>
                         <CardHeader className='text-start ' style={{padding:1}}>
                             <p className='mx-3'>To Do <span>{toDoissueCount}</span>&nbsp;Issue </p>
@@ -183,10 +183,10 @@ const Board = (props) => {
                                 return issue.status === 'To do' && (
                                     <Card key={index} className='mb-2'>
                                         <Card.Body>
-                                            <div className="my-1 fw-bold text-start"> Vendor Verification </div>
+                                            <div className="my-1 fw-bold text-start"> {issue.summary.slice(0,16)} </div>
                                             <div className="row">
                                                 <div className="col-4">
-                                                    <p className="text-muted space-font m-0 pointer">{issue.summary}</p>
+                                                    <p className="text-muted space-font m-0 pointer">{issue.issueGuid}</p>
                                                 </div>
                                                 <div className="col-8 text-end">
                                                     <p className="text-muted space-font m-0">{issue.assignedToUser}&nbsp;<span><FaEdit onClick={() => getIssueListbyissueId(issue.issueId)}></FaEdit></span>
@@ -199,8 +199,6 @@ const Board = (props) => {
                             })}
                         </CardBody>
                     </Card>
-
-
                 </div>
                 <div className='col-md-4 mt-3'>
                     <Card>
@@ -210,13 +208,13 @@ const Board = (props) => {
                         <CardBody>
                             {getAllIssues.map((issue, index) => {
                                 return issue.status === 'In Progress' && (
-                                    <Card key={index} >
+                                    <Card key={index} className='mb-2' >
                                         <Card.Body style={{padding:10}}>
                                             
-                                            <div className="my-1 fw-bold text-start"> Vendor Verification </div>
+                                            <div className="my-1 fw-bold text-start"> {issue.summary.slice(0,16)} </div>
                                             <div className="row">
                                                 <div className="col-4">
-                                                    <p className="text-muted space-font m-0 pointer">{issue.summary}</p>
+                                                    <p className="text-muted space-font m-0 pointer">{issue.issueGuid}</p>
                                                 </div>
                                                 <div className="col-8 text-end">
                                                     <p className="text-muted space-font m-0">{issue.assignedToUser}&nbsp;<span><FaEdit onClick={() => getIssueListbyissueId(issue.issueId)}></FaEdit></span>
@@ -229,8 +227,6 @@ const Board = (props) => {
                             })}
                         </CardBody>
                     </Card>
-
-
                 </div>
                 <div className='col-md-4 mt-3'>
                     <Card>
@@ -242,10 +238,10 @@ const Board = (props) => {
                                 return issue.status === 'Done' && (
                                     <Card key={index} className='mb-2'>
                                         <Card.Body style={{padding:10}}>
-                                            <div className="my-1 fw-bold text-start"> Vendor Verification </div>
+                                            <div className="my-1 fw-bold text-start"> {issue.summary.slice(0,16)} </div>
                                             <div className="row">
                                                 <div className="col-4">
-                                                    <p className="text-muted space-font m-0 pointer">{issue.summary}</p>
+                                                    <p className="text-muted space-font m-0 pointer">{issue.issueGuid}</p>
                                                 </div>
                                                 <div className="col-8 text-end">
                                                     <p className="text-muted space-font m-0">{issue.assignedToUser}&nbsp;<span><FaEdit></FaEdit></span>

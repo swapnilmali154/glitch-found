@@ -29,7 +29,7 @@ const getAllUsers = async () => {
 
 const createUser = async (data) => {
   try {
-    debugger
+    
     const response = await axios.post(`${API_URL}${CREATE_USER}`, data);
     
     return response.data;

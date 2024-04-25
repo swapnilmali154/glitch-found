@@ -28,14 +28,14 @@ const Issues = () => {
     }, []);
 
     const handleEdit = (index) => {
-        debugger
+        
         const updatedIssueList = [...issueList];
         updatedIssueList[index].isEditing = true;
         setissueList(updatedIssueList);
     }
 
     const handleInputChange = (e, index) => {
-        debugger
+        
         const { name, value } = e.target;
         const updatedIssueList = [...issueList];
         updatedIssueList[index][name] = value;
@@ -43,7 +43,7 @@ const Issues = () => {
     }
 
     const handleSave = (index) => {
-        debugger
+        
         const updatedIssueList = [...issueList];
         updatedIssueList[index].isEditing = false;
         setissueList(updatedIssueList);

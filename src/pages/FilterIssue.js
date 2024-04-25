@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { Card,Button } from "react-bootstrap";
+import { Card, Button } from "react-bootstrap";
 import Spinner from 'react-bootstrap/Spinner';
 const FilterIssue = () => {
     const [IssueList, setIssueList] = useState([]);
@@ -12,7 +12,7 @@ const FilterIssue = () => {
     const [issueStatus, setIssueStatus] = useState([]);
     const [alluser, setalluser] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-    const[isLoading,setisLoading]=useState(false);
+    const [isLoading, setisLoading] = useState(false);
     const [filterobj, setFilterObj] = useState({
         "reporter": 0,
         "assignedTo": 0,
@@ -25,9 +25,9 @@ const FilterIssue = () => {
     const onCangeSelect = (event, key) => {
         setFilterObj({ [key]: event.target.value });
     }
-/**************************  Filter Logic ***********8 */
+    /**************************  Filter Logic ***********8 */
     const getfilter = async () => {
-setisLoading(true);
+        setisLoading(true);
         const response = await axios.post("https://onlinetestapi.gerasim.in/api/Glitch/GetIssuesByFilter", filterobj);
 
         if (response.data.result) {
@@ -56,21 +56,14 @@ setisLoading(true);
                 const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllAssignedIssuesByUserId?id=" + filterobj.assignedTo)
                 setFilteredData(result.data.data);
             } else if (filterobj.reporter !== undefined) {
-                //const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllAssignedIssuesByUserId?id=" + filterobj.reporter)
-                //setFilteredData(result.data.data);
-               debugger
-                const filteredArray = [];
-                for (let i = 0; i < IssueList.length; i++) {
-                    if (IssueList[i].reporter ===Number(filterobj.reporter) ) {
-                        filteredArray.push(IssueList[i]);
-                    }
-                }
+                const filteredArray = IssueList.filter(issue => issue.reporter === Number(filterobj.reporter));
                 setFilteredData(filteredArray);
+               
             }
         }
         setisLoading(false);
     }
-/************ Get ALL API */
+    /************ Get ALL API */
     useEffect(() => {
         setisLoading(true);
         const fetchData = async () => {
@@ -90,7 +83,7 @@ setisLoading(true);
 
         fetchData();
     }, []);
-/************ For large Data in Summary and Description filed */
+    /************ For large Data in Summary and Description filed */
     const summaryCellRenderer = (params) => {
         return <div className="scrollable-cell">{params.value}</div>;
     };
@@ -98,7 +91,7 @@ setisLoading(true);
     const descriptionCellRenderer = (params) => {
         return <div className="scrollable-cell">{params.value}</div>;
     };
-/*******  Set Column *****************/
+    /*******  Set Column *****************/
     const colDefs = [
         {
             headerName: "Sr.No",
@@ -112,23 +105,23 @@ setisLoading(true);
         { headerName: "Summary", field: "summary", width: 150, cellRenderer: 'summaryCellRenderer' },
         { headerName: "Description", field: "description", width: 150, cellRenderer: 'descriptionCellRenderer' }
     ];
-/****** for full sidth of table  */
+    /****** for full sidth of table  */
     const defaultColDef = {
         flex: 1,
     };
 
-/*************** Reset Completet form */
-const resetform=()=>{
-    setFilterObj({
-        "reporter": 0,
-        "assignedTo": 0,
-        "statusId": 0,
-        "projectId": 0,
-        "issueTypeId": 0,
-        "searchText": ""
-    })
-    setFilteredData(IssueList);
-}
+    /*************** Reset Completet form */
+    const resetform = () => {
+        setFilterObj({
+            "reporter": 0,
+            "assignedTo": 0,
+            "statusId": 0,
+            "projectId": 0,
+            "issueTypeId": 0,
+            "searchText": ""
+        })
+        setFilteredData(IssueList);
+    }
     return (
         <>
             <div className='row mt-5'></div>
@@ -142,7 +135,7 @@ const resetform=()=>{
                                 <div className='col-2'>
                                     <label><strong>StatusID</strong></label>
 
-                                    <select className='form-select' onChange={(event) => { onCangeSelect(event, 'statusId') }}>
+                                    <select className='form-select' value={filterobj.statusId} onChange={(event) => { onCangeSelect(event, 'statusId') }}>
                                         <option>Select status</option>                                                    {
                                             issueStatus.map((sid) => {
                                                 return (<option value={sid.statusId}>{sid.status}</option>)
@@ -153,7 +146,7 @@ const resetform=()=>{
                                 <div className='col-2'>
                                     <label><strong>Issue Type</strong></label>
 
-                                    <select className='form-select' onChange={(event) => { onCangeSelect(event, 'issueTypeId') }}>
+                                    <select className='form-select' value={filterobj.issueTypeId} onChange={(event) => { onCangeSelect(event, 'issueTypeId') }}>
                                         <option>Select Type</option>
                                         {
                                             issuetype.map((issue) => {
@@ -164,7 +157,7 @@ const resetform=()=>{
                                 </div>
                                 <div className='col-2'>
                                     <label><strong>Assigned To</strong></label>
-                                    <select className='form-select' onChange={(event) => { onCangeSelect(event, 'assignedTo') }}>
+                                    <select className='form-select' value={filterobj.assignedTo} onChange={(event) => { onCangeSelect(event, 'assignedTo') }}>
                                         <option>Select Assigned</option>
                                         {
                                             alluser.map((sid) => {
@@ -176,7 +169,7 @@ const resetform=()=>{
 
                                 <div className='col-2'>
                                     <label><strong>Project Name</strong></label>
-                                    <select className='form-select' onChange={(event) => { onCangeSelect(event, 'projectId') }}>
+                                    <select className='form-select' value={filterobj.projectId} onChange={(event) => { onCangeSelect(event, 'projectId') }}>
                                         <option>Select Project</option>
                                         {
                                             projectuser.map((project) => {
@@ -187,7 +180,7 @@ const resetform=()=>{
                                 </div>
                                 <div className='col-2'>
                                     <label><strong>Reporter</strong></label>
-                                    <select className='form-select' onChange={(event) => { onCangeSelect(event, 'reporter') }}>
+                                    <select className='form-select' value={filterobj.reporter} onChange={(event) => { onCangeSelect(event, 'reporter') }}>
                                         <option>Select Reporter</option>
                                         {
                                             alluser.map((sid) => {
@@ -215,31 +208,38 @@ const resetform=()=>{
                     </Card.Header>
                     <Card.Body className="d-flex justify-content-center align-items-center">
                         {
-                            isLoading ? ( <div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
+                            isLoading ? (<div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
 
-                            <Button variant="primary" disabled>
-                                <Spinner
-                                    as="span"
-                                    animation="grow"
-                                    size="sm"
-                                    role="status"
-                                    aria-hidden="true"
-                                />
-                                Loading...
-                            </Button>
-                        </div>) :( <div className="ag-theme-quartz" style={{ height: 500, width: '100%' }}>
-                            <AgGridReact
-                                rowData={filteredData}
-                                columnDefs={colDefs}
-                                defaultColDef={defaultColDef}
-                                pagination={true}
-                                paginationPageSize={5}
-                                paginationPageSizeSelector={[5, 10, 25]}
-                                frameworkComponents={{ summaryCellRenderer, descriptionCellRenderer }}
-                            />
-                        </div>)
+                                <Button variant="primary" disabled>
+                                    <Spinner
+                                        as="span"
+                                        animation="grow"
+                                        size="sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    />
+                                    Loading...
+                                </Button>
+                            </div>) : (<div className="ag-theme-quartz" style={{ height: 500, width: '100%' }}>
+                            
+                                {filteredData.length > 0 ? (
+                                    <AgGridReact
+                                        rowData={filteredData}
+                                        columnDefs={colDefs}
+                                        defaultColDef={defaultColDef}
+                                        pagination={true}
+                                        paginationPageSize={5}
+                                        paginationPageSizeSelector={[5, 10, 25]}
+                                        frameworkComponents={{ summaryCellRenderer, descriptionCellRenderer }}
+                                    />
+                                ) : (
+                                    <div style={{ textAlign: 'center', marginTop: '15%', fontSize: '30px', color: 'gray' }}>
+                                       Issue Not found
+                                    </div>
+                                )}
+                            </div>)
                         }
-                       
+
                     </Card.Body>
                     <Card.Footer></Card.Footer>
                 </Card>
