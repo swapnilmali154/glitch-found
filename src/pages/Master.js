@@ -7,7 +7,8 @@ import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { GET_ALL_ISSUE_TYPE, ADD_NEW_STATUS, GET_ALL_ISSUE_STATUS, UPDATE_STATUS, DELETE_STATUS_BY_ID, ADD_NEW_TYPE, DELETE_ISSUE_TYPE_BY_ID, UPDATE_ISSUE_TYPE, VALIDATION_REQUIRED } from '../core/constant/Constant.js'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import '../index.css'
+import '../index.css';
+import Spinner from 'react-bootstrap/Spinner';
 
 const Master = () => {
     const [activeButton, setActiveButton] = useState(null);
@@ -472,7 +473,20 @@ const Master = () => {
                                                 <Button onClick={displayModal}>Add New  <FontAwesomeIcon icon={faPlus} /></Button>
                                             </Card.Header>
                                             <Card.Body className="d-flex justify-content-center">
-                                                <div
+                                                {
+                                                    loading ? (<div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
+
+                                                    <Button variant="primary" disabled>
+                                                        <Spinner
+                                                            as="span"
+                                                            animation="grow"
+                                                            size="sm"
+                                                            role="status"
+                                                            aria-hidden="true"
+                                                        />
+                                                        Loading...
+                                                    </Button>
+                                                </div>) :( <div
                                                     className="ag-theme-quartz align-item-center " style={{ height: 500, width: '55%' }}
                                                 >
                                                     <AgGridReact
@@ -487,7 +501,9 @@ const Master = () => {
                                                         frameworkComponents={{ CustomHeaderComponent }}
                                                  
                                                     />
-                                                </div>
+                                                </div>)
+                                                }
+                                               
                                             </Card.Body>
                                             <Card.Footer>
 

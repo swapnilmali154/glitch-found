@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { Card } from "react-bootstrap";
-
+import { Card,Button } from "react-bootstrap";
+import Spinner from 'react-bootstrap/Spinner';
 const FilterIssue = () => {
     const [IssueList, setIssueList] = useState([]);
     const [projectuser, setProjectUser] = useState([]);
@@ -12,7 +12,7 @@ const FilterIssue = () => {
     const [issueStatus, setIssueStatus] = useState([]);
     const [alluser, setalluser] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
-
+const[isLoading,setisLoading]=useState(false);
     const [filterobj, setFilterObj] = useState({
         "reporter": 0,
         "assignedTo": 0,
@@ -27,7 +27,7 @@ const FilterIssue = () => {
     }
 /**************************  Filter Logic ***********8 */
     const getfilter = async () => {
-
+setisLoading(true);
         const response = await axios.post("https://onlinetestapi.gerasim.in/api/Glitch/GetIssuesByFilter", filterobj);
 
         if (response.data.result) {
@@ -60,9 +60,11 @@ const FilterIssue = () => {
                 setFilteredData(result.data.data);
             }
         }
+        setisLoading(false);
     }
 /************ Get ALL API */
     useEffect(() => {
+        setisLoading(true);
         const fetchData = async () => {
             const issueResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssues");
             const issueStatus = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssueStatus");
@@ -75,6 +77,7 @@ const FilterIssue = () => {
             setissueType(issueTypeResponse.data.data);
             setalluser(allUserResponse.data.data);
             setFilteredData(issueResponse.data.data);
+            setisLoading(false)
         };
 
         fetchData();
@@ -188,7 +191,20 @@ const FilterIssue = () => {
                         </div>
                     </Card.Header>
                     <Card.Body className="d-flex justify-content-center align-items-center">
-                        <div className="ag-theme-quartz" style={{ height: 500, width: '100%' }}>
+                        {
+                            isLoading ? ( <div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
+
+                            <Button variant="primary" disabled>
+                                <Spinner
+                                    as="span"
+                                    animation="grow"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                />
+                                Loading...
+                            </Button>
+                        </div>) :( <div className="ag-theme-quartz" style={{ height: 500, width: '100%' }}>
                             <AgGridReact
                                 rowData={filteredData}
                                 columnDefs={colDefs}
@@ -198,7 +214,9 @@ const FilterIssue = () => {
                                 paginationPageSizeSelector={[5, 10, 25]}
                                 frameworkComponents={{ summaryCellRenderer, descriptionCellRenderer }}
                             />
-                        </div>
+                        </div>)
+                        }
+                       
                     </Card.Body>
                     <Card.Footer></Card.Footer>
                 </Card>

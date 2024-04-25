@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Table, Button, Card, Row, Col, Modal, Toast } from "react-bootstrap";
 import { deleteData, getData, postData } from '../Service/Service.js';
 import '../Service/Main.css'
@@ -10,11 +10,10 @@ import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Spinner from 'react-bootstrap/Spinner';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons/faSpinner';
 import { MyContext } from '../MyContextProvider.js';
 
 const Project = () => {
-    const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
+    const { loggedUserData, updateLoggedUserData } = useContext(MyContext);
     const [projectList, setprojectList] = useState([]);
     const [userList, setUserList] = useState([]);
     const [projectObj, setprojectObj] = useState({
@@ -159,21 +158,21 @@ const Project = () => {
     //     { field: "technologyStack", headerName: "Technology Stack", cellStyle: { textAlign: 'center' } },
     //     { field: "createdByUserName", headerName: "Created By User Name", cellStyle: { textAlign: 'center' } },
     //     { field: "Action", headerName: "Action", cellRenderer: CustomButtonComponent }
-        
+
     // ]);
     const [colDefs, setColDefs] = useState([
         {
-          field: "Srno",
-          flex: 0.5,
-          headerName: "Sr No",
-          cellStyle: { textAlign: "center" },
+            field: "Srno",
+            flex: 0.5,
+            headerName: "Sr No",
+            cellStyle: { textAlign: "center" },
         },
         { field: "fullName", flex: 1 },
         { field: "leadingByUserName", flex: 1 },
         { field: "technologyStack", flex: 1 },
         { field: "createdByUserName", flex: 1 },
         { field: "Action", cellRenderer: CustomButtonComponent, flex: 0.5 },
-      ]);
+    ]);
 
 
     const handleChange = (event, key) => {
@@ -184,7 +183,7 @@ const Project = () => {
         try {
             postData('CreateProject', projectObj).then(result => {
                 if (result !== undefined) {
-                   // toast.success('Project Saved Successfully...!');
+                    // toast.success('Project Saved Successfully...!');
                     getProjectList();
                 }
             });
@@ -231,230 +230,230 @@ const Project = () => {
 
     return (
         <>
-         <div className='mt-5'></div>
-        <div className='container-fluid'>
-          {/* =  {loggedUserData.emailId} */}
-            <div >
-                <Card >
-                   
-                    <Card.Header className="d-flex justify-content-between ">
-                        <h4>Project List</h4>
-                        <Button onClick={handleShow}>Add New <FontAwesomeIcon icon={faPlus} /></Button>
-                    </Card.Header>
-                    <Card.Body>{
-                        isLoading ?
-                            <div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
-                               
-                                <Button variant="primary" disabled>
-                                    <Spinner
-                                        as="span"
-                                        animation="grow"
-                                        size="md"
-                                        role="status"
-                                        aria-hidden="true"
+            <div className='mt-5'></div>
+            <div className='container-fluid'>
+                {/* =  {loggedUserData.emailId} */}
+                <div >
+                    <Card >
+
+                        <Card.Header className="d-flex justify-content-between ">
+                            <h4>Project List</h4>
+                            <Button onClick={handleShow}>Add New <FontAwesomeIcon icon={faPlus} /></Button>
+                        </Card.Header>
+                        <Card.Body>{
+                            isLoading ?
+                                <div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
+
+                                    <Button variant="primary" disabled>
+                                        <Spinner
+                                            as="span"
+                                            animation="grow"
+                                            size="sm"
+                                            role="status"
+                                            aria-hidden="true"
+                                        />
+                                        Loading...
+                                    </Button>
+                                </div> : <div
+                                    className="ag-theme-quartz" style={{ height: 500, width: '100%' }}
+                                >
+                                    <AgGridReact
+                                        rowData={projectList}
+                                        columnDefs={colDefs}
+                                        pagination={true}
+                                        paginationPageSize={7}
+                                        paginationPageSizeSelector={[7, 10, 20, 25]}
+
                                     />
-                                    <FontAwesomeIcon  icon={faSpinner} spin />;
-                                </Button>
-                            </div> : <div
-                                className="ag-theme-quartz" style={{ height: 500, width: '100%' }}
-                            >
-                                <AgGridReact
-                                    rowData={projectList}
-                                    columnDefs={colDefs}
-                                    pagination={true}
-                                    paginationPageSize={7}
-                                    paginationPageSizeSelector={[7, 10, 20, 25]}
-                                   
-                                />
-                            </div>}
-                    </Card.Body>
-                    <Card.Footer>
+                                </div>}
+                        </Card.Body>
+                        <Card.Footer>
 
-                    </Card.Footer>
-                </Card>
+                        </Card.Footer>
+                    </Card>
 
-                <div className='col-md-12'>
-                    <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}
-                    style={{ boxShadow: '8px 8px 8px rgba(0, 0, 0, 0.5)' }} >
-                        <Modal.Header closeButton className=' custom-card-header bg-light' >
-                            <Modal.Title>
-                                {
-                                    projectObj.projectId == 0 && <h4>Add Project</h4>
-                                }
-                                {
-                                    projectObj.projectId != 0 && <h4>Update Project</h4>
-                                }
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <div >
-                                <div>
-                                    <div className='card-body'>
-                                        <div className='row'>
-                                            <div className='col-md-6'>
-                                                <label>Short Name</label>
-                                                <input type="text" className='form-control'
-                                                    value={projectObj.shortName} placeholder='Enter Short Name'
-                                                    onChange={(event) => handleChange(event, 'shortName')}>
-                                                </input>
-                                                {
-                                                    validationerror && projectObj.shortName == '' && <div className='text-danger'>
-                                                        This field is required
-                                                    </div>
-                                                }
+                    <div className='col-md-12'>
+                        <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}
+                            style={{ boxShadow: '8px 8px 8px rgba(0, 0, 0, 0.5)' }} >
+                            <Modal.Header closeButton className=' custom-card-header bg-light' >
+                                <Modal.Title>
+                                    {
+                                        projectObj.projectId == 0 && <h4>Add Project</h4>
+                                    }
+                                    {
+                                        projectObj.projectId != 0 && <h4>Update Project</h4>
+                                    }
+                                </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <div >
+                                    <div>
+                                        <div className='card-body'>
+                                            <div className='row'>
+                                                <div className='col-md-6'>
+                                                    <label>Short Name</label>
+                                                    <input type="text" className='form-control'
+                                                        value={projectObj.shortName} placeholder='Enter Short Name'
+                                                        onChange={(event) => handleChange(event, 'shortName')}>
+                                                    </input>
+                                                    {
+                                                        validationerror && projectObj.shortName == '' && <div className='text-danger'>
+                                                            This field is required
+                                                        </div>
+                                                    }
+                                                </div>
+
+                                                <div className='col-md-6'>
+                                                    <label>Full Name </label>
+                                                    <input type="text" className='form-control'
+                                                        value={projectObj.fullName} placeholder='Enter Full Name'
+                                                        onChange={(event) => handleChange(event, 'fullName')}>
+                                                    </input>
+                                                    {
+                                                        validationerror && projectObj.fullName == '' && <div className='text-danger'>
+                                                            This field is required
+                                                        </div>
+                                                    }
+                                                </div>
                                             </div>
 
-                                            <div className='col-md-6'>
-                                                <label>Full Name </label>
-                                                <input type="text" className='form-control'
-                                                    value={projectObj.fullName} placeholder='Enter Full Name'
-                                                    onChange={(event) => handleChange(event, 'fullName')}>
-                                                </input>
-                                                {
-                                                    validationerror && projectObj.fullName == '' && <div className='text-danger'>
-                                                        This field is required
-                                                    </div>
-                                                }
-                                            </div>
-                                        </div>
+                                            <div className='row my-2'>
+                                                <div className='col-md-6'>
+                                                    <label>Start Date</label>
+                                                    <input type='Date' className='form-control'
+                                                        value={projectObj.startDate} placeholder='Select Start date'
+                                                        onChange={(event) => handleChange(event, 'startDate')}>
+                                                    </input>
+                                                    {
+                                                        validationerror && projectObj.startDate == '' && <div className='text-danger'>
+                                                            This field is required
+                                                        </div>
+                                                    }
+                                                </div>
 
-                                        <div className='row my-2'>
-                                            <div className='col-md-6'>
-                                                <label>Start Date</label>
-                                                <input type='Date' className='form-control'
-                                                    value={projectObj.startDate} placeholder='Select Start date'
-                                                    onChange={(event) => handleChange(event, 'startDate')}>
-                                                </input>
-                                                {
-                                                    validationerror && projectObj.startDate == '' && <div className='text-danger'>
-                                                        This field is required
-                                                    </div>
-                                                }
-                                            </div>
-
-                                            <div className='col-md-6'>
-                                                <label>Lead By</label>
-                                                <select className="form-select"  onChange={(event) => handleChange(event, 'LeadBy')}>
-                                        <option>Select User</option>
-                                        {
-                                            userList.map((user, index) => {
-                                                return (
-                                                    <option value={user.userId}>{user.fullName}</option>
-                                                )
-                                            })
-                                        }
-                                    </select>
-                                            </div>
-                                        </div>
-
-                                        <div className='row my-2'>
-                                            <div className='col-md-6'>
-                                                <label>Team Size</label>
-                                                <input type="text" className='form-control'
-                                                    value={projectObj.teamSize} placeholder='Enter Team Size'
-                                                    onChange={(event) => handleChange(event, 'teamSize')}>
-                                                </input>
-                                                {
-                                                    validationerror && projectObj.teamSize == '' && <div className='text-danger'>
-                                                        This field is required
-                                                    </div>
-                                                }
+                                                <div className='col-md-6'>
+                                                    <label>Lead By</label>
+                                                    <select className="form-select" onChange={(event) => handleChange(event, 'LeadBy')}>
+                                                        <option>Select User</option>
+                                                        {
+                                                            userList.map((user, index) => {
+                                                                return (
+                                                                    <option value={user.userId}>{user.fullName}</option>
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
+                                                </div>
                                             </div>
 
-                                            <div className='col-md-6'>
-                                                <label>Expected End Date</label>
-                                                <input type='Date' className='form-control'
-                                                    value={projectObj.expectedEndDate} placeholder='Select Expected End Date'
-                                                    onChange={(event) => handleChange(event, 'expectedEndDate')}>
-                                                </input>
-                                                {
-                                                    validationerror && projectObj.expectedEndDate == '' && <div className='text-danger'>
-                                                        This field is required
-                                                    </div>
-                                                }
-                                            </div>
-                                        </div>
+                                            <div className='row my-2'>
+                                                <div className='col-md-6'>
+                                                    <label>Team Size</label>
+                                                    <input type="text" className='form-control'
+                                                        value={projectObj.teamSize} placeholder='Enter Team Size'
+                                                        onChange={(event) => handleChange(event, 'teamSize')}>
+                                                    </input>
+                                                    {
+                                                        validationerror && projectObj.teamSize == '' && <div className='text-danger'>
+                                                            This field is required
+                                                        </div>
+                                                    }
+                                                </div>
 
-                                        <div className='row my-2'>
-                                            <div className='col-md-6'>
-                                                <label>Technology Stack</label>
-                                                <input type="text" className='form-control'
-                                                    value={projectObj.technologyStack} placeholder='Enter Technology Stack'
-                                                    onChange={(event) => handleChange(event, 'technologyStack')}>
-                                                </input>
-                                                {
-                                                    validationerror && projectObj.technologyStack == '' && <div className='text-danger'>
-                                                        This field is required
-                                                    </div>
-                                                }
-                                            </div>
-
-                                            <div className='col-md-6'>
-                                                <label>Created Date</label>
-                                                <input type='Date' className='form-control'
-                                                    value={projectObj.createdDate} placeholder='Select Created Date'
-                                                    onChange={(event) => handleChange(event, 'createdDate')}>
-                                                </input>
-                                                {
-                                                    validationerror && projectObj.createdDate == '' && <div className='text-danger'>
-                                                        This field is required
-                                                    </div>
-                                                }
-                                            </div>
-                                        </div>
-
-
-                                        <div className='row my-2'>
-                                            <div className='col-md-6'>
-                                                <label>CreatedBy</label>
-                                                <select className="form-select"  onChange={(event) => handleChange(event, 'CreatedBy')}>
-                                        <option>Select User</option>
-                                        {
-                                            userList.map((user, index) => {
-                                                return (
-                                                    <option value={user.userId}>{user.fullName}</option>
-                                                )
-                                            })
-                                        }
-                                    </select>
+                                                <div className='col-md-6'>
+                                                    <label>Expected End Date</label>
+                                                    <input type='Date' className='form-control'
+                                                        value={projectObj.expectedEndDate} placeholder='Select Expected End Date'
+                                                        onChange={(event) => handleChange(event, 'expectedEndDate')}>
+                                                    </input>
+                                                    {
+                                                        validationerror && projectObj.expectedEndDate == '' && <div className='text-danger'>
+                                                            This field is required
+                                                        </div>
+                                                    }
+                                                </div>
                                             </div>
 
-                                            <div className='col-md-6'>
-                                                <label>Project Logo</label>
-                                                <input type="text" className='form-control'
-                                                    value={projectObj.projectLogo} placeholder='Enter Project Logo'
-                                                    onChange={(event) => handleChange(event, 'projectLogo')}>
-                                                </input>
-                                                {
-                                                    validationerror && projectObj.projectLogo == '' && <div className='text-danger'>
-                                                        This field is required
-                                                    </div>
-                                                }
+                                            <div className='row my-2'>
+                                                <div className='col-md-6'>
+                                                    <label>Technology Stack</label>
+                                                    <input type="text" className='form-control'
+                                                        value={projectObj.technologyStack} placeholder='Enter Technology Stack'
+                                                        onChange={(event) => handleChange(event, 'technologyStack')}>
+                                                    </input>
+                                                    {
+                                                        validationerror && projectObj.technologyStack == '' && <div className='text-danger'>
+                                                            This field is required
+                                                        </div>
+                                                    }
+                                                </div>
+
+                                                <div className='col-md-6'>
+                                                    <label>Created Date</label>
+                                                    <input type='Date' className='form-control'
+                                                        value={projectObj.createdDate} placeholder='Select Created Date'
+                                                        onChange={(event) => handleChange(event, 'createdDate')}>
+                                                    </input>
+                                                    {
+                                                        validationerror && projectObj.createdDate == '' && <div className='text-danger'>
+                                                            This field is required
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+
+
+                                            <div className='row my-2'>
+                                                <div className='col-md-6'>
+                                                    <label>CreatedBy</label>
+                                                    <select className="form-select" onChange={(event) => handleChange(event, 'CreatedBy')}>
+                                                        <option>Select User</option>
+                                                        {
+                                                            userList.map((user, index) => {
+                                                                return (
+                                                                    <option value={user.userId}>{user.fullName}</option>
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
+                                                </div>
+
+                                                <div className='col-md-6'>
+                                                    <label>Project Logo</label>
+                                                    <input type="text" className='form-control'
+                                                        value={projectObj.projectLogo} placeholder='Enter Project Logo'
+                                                        onChange={(event) => handleChange(event, 'projectLogo')}>
+                                                    </input>
+                                                    {
+                                                        validationerror && projectObj.projectLogo == '' && <div className='text-danger'>
+                                                            This field is required
+                                                        </div>
+                                                    }
+                                                </div>
                                             </div>
                                         </div>
+
                                     </div>
+                                </div>
+                            </Modal.Body>
+                            <Modal.Footer >
+                                <div>
+                                    {
+                                        projectObj.projectId == 0 &&
+                                        <Button variant='success' onClick={saveProject}>Add</Button>
+                                    }
+                                    {
+                                        projectObj.projectId != 0 &&
+                                        <Button variant='success' onClick={UpdateProject}>Update</Button>
+
+                                    }
+                                    {/* <Button variant='danger' className='m-2' onClick={() => setShow(false)}>Cancel</Button> */}
+                                    <Button variant='secondary' className='m-2' onClick={resetProjectObj}>Reset</Button>
 
                                 </div>
-                            </div>
-                        </Modal.Body>
-                        <Modal.Footer >
-                            <div>
-                                {
-                                    projectObj.projectId == 0 &&
-                                    <Button variant='success' onClick={saveProject}>Add</Button>
-                                }
-                                {
-                                    projectObj.projectId != 0 &&
-                                    <Button variant='success' onClick={UpdateProject}>Update</Button>
-
-                                }
-                                {/* <Button variant='danger' className='m-2' onClick={() => setShow(false)}>Cancel</Button> */}
-                                <Button variant='secondary' className='m-2' onClick={resetProjectObj}>Reset</Button>
-
-                            </div>
-                        </Modal.Footer>
-                    </Modal>
-                    {/* <ToastContainer
+                            </Modal.Footer>
+                        </Modal>
+                        {/* <ToastContainer
                         position="top-right"
                         autoClose={1000}
                         closeButton={false}
@@ -463,14 +462,14 @@ const Project = () => {
                     />
 
                     <ToastContainer /> */}
-                    
 
+
+                    </div>
                 </div>
-            </div>
 
-        </div>
+            </div>
         </>
-       
+
 
     );
 };

@@ -91,11 +91,7 @@ const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
                                     </Link>
                                 </li>
                                 
-                                <li className="nav-item">
-                                    <Link className="nav-link" to="/board">
-                                        Board
-                                    </Link>
-                                </li>
+                               
                                 <li className="nav-item">
                                     <Link className="nav-link" onClick={()=>setShowModal(true)}>
                                         Create

@@ -16,6 +16,7 @@ import { AgGridReact } from "ag-grid-react";
 import { FaUser } from "react-icons/fa";
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Spinner from 'react-bootstrap/Spinner';
 
 const User = () => {
   const [userList, setUserList] = useState([]);
@@ -54,12 +55,14 @@ const User = () => {
         });
     });
 };
-
+const[isLoading,setisLoading]=useState(false);
   const getUsers = () => {
+    setisLoading(true);
     getData(GET_ALL_USERS).then((result) => {
       setUserList(result);
       const userWithSerialNumbers = addSerialNumbers(result);
       setUserList(userWithSerialNumbers);
+      setisLoading(false);
     });
   };
 
@@ -227,6 +230,7 @@ const User = () => {
   return (
     <div>
        <div className='row mt-5'></div>
+
       <div className="row">
         <div className="col-md-12">
           <div className="card bg-light my-2 mx-4">
@@ -243,7 +247,19 @@ const User = () => {
               </div>
             </div>
             <div className="card-body">
-              <div
+            {
+          isLoading ? (<div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
+            <Button variant="primary" disabled>
+          <Spinner
+            as="span"
+            animation="grow"
+            size="sm"
+            role="status"
+            aria-hidden="true"
+          />
+          Loading...
+        </Button>
+            </div>) :( <div
                 className="ag-theme-quartz"
                 style={{ height: 450, width: "100%" }}
               >
@@ -254,7 +270,9 @@ const User = () => {
                   paginationPageSize={paginationPageSize}
                   paginationPageSizeSelector={paginationPageSizeSelector}
                 />
-              </div>
+              </div>)
+        }
+             
             </div>
           </div>
         </div>
@@ -421,13 +439,8 @@ const User = () => {
             </Button>
           </Modal.Footer>
         </Modal>
-        {/* <ToastContainer
-          position="top-right"
-          autoClose={1000}
-          closeButton={false}
-          theme="light"
-        />
-        <ToastContainer /> */}
+      
+       
       </div>
     </div>
   );

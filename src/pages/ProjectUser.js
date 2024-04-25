@@ -7,7 +7,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
-
+import Spinner from 'react-bootstrap/Spinner';
 const ProjectUser = () => {
     const [ProjectUserList, setProjectUserList] = useState([]);
     const [ProjectUserobj, setProjectUserobj] = useState({
@@ -24,7 +24,7 @@ const ProjectUser = () => {
         "isActive": "",
         "technicalStack": ""
     })
-
+    const [isLoading, setisLoading] = useState(false);
     const [projectList, setprojectList] = useState([]);
     const [UserList, setUserList] = useState([]);
     const pagination = true;
@@ -38,10 +38,12 @@ const ProjectUser = () => {
     };
 
     const getAllProjectUserList = async () => {
+        setisLoading(true);
         getData('GetAllProjectUsers').then(result => {
             setProjectUserList(result);
             const projectsWithSerialNumbers = addSerialNumbers(result);
             setProjectUserList(projectsWithSerialNumbers);
+            setisLoading(false);
         })
     }
     const getAllProjectList = async () => {
@@ -62,10 +64,10 @@ const ProjectUser = () => {
             } catch (error) {
                 alert(error);
             }
-            
+
         })
     }
-    const updateCheckboxValue =()=>{
+    const updateCheckboxValue = () => {
 
     }
     useEffect(() => {
@@ -94,7 +96,7 @@ const ProjectUser = () => {
 
     }
 
-   const UpdateProjectUser = () =>{
+    const UpdateProjectUser = () => {
 
     }
 
@@ -149,7 +151,7 @@ const ProjectUser = () => {
             flex: 0.5,
             headerName: "Sr No",
             cellStyle: { textAlign: "center" },
-          },
+        },
         { field: "fullName" },
         { field: "userEmail" },
         { field: "roleInProject" },
@@ -164,174 +166,189 @@ const ProjectUser = () => {
     }
     return (
         <>
-        <div className=' mt-5'></div>
-         <div className='container-fluid'>
-            <div>
-                <Card>
-                    <Card.Header className="d-flex justify-content-between">
-                        <h4> Project User List</h4>
-                        <Button onClick={handleShow}>Add New</Button>
-                    </Card.Header>
-                    <Card.Body>
-                    <div
-                            className="ag-theme-quartz" style={{ height: 500, width: '100%' }}
-                            >
-                            <AgGridReact
-                                rowData={ProjectUserList}
-                                columnDefs={colDefs}
-                                pagination={pagination}
-                                paginationPageSize={paginationPageSize}
-                                paginationPageSizeSelector={paginationPageSizeSelector}
-                            />
-                        </div>
-                       
-                    </Card.Body>
-                    <Card.Footer>
+            <div className=' mt-5'></div>
+            <div className='container-fluid'>
+                <div>
+                    <Card>
+                        <Card.Header className="d-flex justify-content-between">
+                            <h4> Project User List</h4>
+                            <Button onClick={handleShow}>Add New</Button>
+                        </Card.Header>
+                        <Card.Body>
+                            {
+                                isLoading ? (<div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
+                                    <Button variant="primary" disabled>
+                                        <Spinner
+                                            as="span"
+                                            animation="grow"
+                                            size="sm"
+                                            role="status"
+                                            aria-hidden="true"
+                                        />
+                                        Loading...
+                                    </Button>
+                                </div>) : (<div
+                                    className="ag-theme-quartz" style={{ height: 500, width: '100%' }}
+                                >
+                                    <AgGridReact
+                                        rowData={ProjectUserList}
+                                        columnDefs={colDefs}
+                                        pagination={pagination}
+                                        paginationPageSize={paginationPageSize}
+                                        paginationPageSizeSelector={paginationPageSizeSelector}
+                                    />
+                                </div>)
+                            }
 
-                    </Card.Footer>
-                </Card>
-                <div className='col-md-12'>
-                    <Modal show={show} onHide={handleClose}>
-                        <Modal.Header closeButton className=' custom-card-header'>
-                            <Modal.Title>
-                                {
-                                    ProjectUserobj.projectUserId == 0 && <h4>Add Project User</h4>
-                                }
-                                {
-                                    ProjectUserobj.projectUserId != 0 && <h4>Update Project User</h4>
-                                }</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
 
-                            <div >
+
+                        </Card.Body>
+                        <Card.Footer>
+
+                        </Card.Footer>
+                    </Card>
+                    <div className='col-md-12'>
+                        <Modal show={show} onHide={handleClose}>
+                            <Modal.Header closeButton className=' custom-card-header'>
+                                <Modal.Title>
+                                    {
+                                        ProjectUserobj.projectUserId == 0 && <h4>Add Project User</h4>
+                                    }
+                                    {
+                                        ProjectUserobj.projectUserId != 0 && <h4>Update Project User</h4>
+                                    }</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+
                                 <div >
-                                    <div className='card-body'>
-                                        <div className='row'>
-                                            <div className='col-md-6'>
-                                                <label>FullName</label>
-                                                <input type="text" className='form-control' value={ProjectUserobj.fullName}
-                                                    placeholder='Enter full Name' onChange={(event) => handleChange(event, 'fullName')}></input>
+                                    <div >
+                                        <div className='card-body'>
+                                            <div className='row'>
+                                                <div className='col-md-6'>
+                                                    <label>FullName</label>
+                                                    <input type="text" className='form-control' value={ProjectUserobj.fullName}
+                                                        placeholder='Enter full Name' onChange={(event) => handleChange(event, 'fullName')}></input>
+                                                </div>
+                                                <div className='col-md-6'>
+                                                    <label>UserEmail</label>
+                                                    <input type="Email" className='form-control' value={ProjectUserobj.userEmail}
+                                                        placeholder='Enter user Email' onChange={(event) => handleChange(event, 'userEmail')} ></input>
+                                                </div>
                                             </div>
-                                            <div className='col-md-6'>
-                                                <label>UserEmail</label>
-                                                <input type="Email" className='form-control' value={ProjectUserobj.userEmail}
-                                                    placeholder='Enter user Email' onChange={(event) => handleChange(event, 'userEmail')} ></input>
+                                            <div className='row'>
+                                                <div className='col-md-6'>
+                                                    <label>User Id</label>
+                                                    <select className='form-select' value={ProjectUserobj.projectUserId}
+                                                        onChange={(event) => handleChange(event, 'projectUserId')}>
+                                                        <option>Select User Id</option>
+                                                        {
+                                                            ProjectUserList.map((ProjectUser, index) => {
+                                                                return (
+                                                                    <option key={ProjectUser.projectUserId} value={ProjectUser.projectUserId}>{ProjectUser.projectName}</option>
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div className='col-md-6'>
+                                                    <label> Added Date </label>
+                                                    <input type='Date' className='form-control' value={ProjectUserobj.addedDate}
+                                                        placeholder='Select Date' onChange={(event) => handleChange(event, 'addedDate')}></input>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className='row'>
-                                            <div className='col-md-6'>
-                                                <label>User Id</label>
-                                                <select className='form-select' value={ProjectUserobj.projectUserId}
-                                                    onChange={(event) => handleChange(event, 'projectUserId')}>
-                                                    <option>Select User Id</option>
-                                                    {
-                                                        ProjectUserList.map((ProjectUser, index) => {
-                                                            return (
-                                                                <option key={ProjectUser.projectUserId} value={ProjectUser.projectUserId}>{ProjectUser.projectName}</option>
-                                                            )
-                                                        })
-                                                    }
-                                                </select>
-                                            </div>
-                                            <div className='col-md-6'>
-                                                <label> Added Date </label>
-                                                <input type='Date' className='form-control' value={ProjectUserobj.addedDate}
-                                                    placeholder='Select Date' onChange={(event) => handleChange(event, 'addedDate')}></input>
-                                            </div>
-                                        </div>
-                                        <div className='row'>
-                                            <div className='col-md-6'>
-                                                <label>Project Id</label>
-                                                <select className='form-select' value={ProjectUserobj.projectId}
-                                                    onChange={(event) => handleChange(event, 'projectId')}>
-                                                    <option>Select Project Id</option>
-                                                    {
-                                                        projectList.map((project, index) => {
-                                                            return (
-                                                                <option value={project.projectId}>{project.projectName}</option>
-                                                            )
-                                                        })
-                                                    }
-                                                </select>
-                                            </div>
-                                            <div className='col-md-6'>
-                                                <label>Email</label>
-                                                <select className='form-select' value={ProjectUserobj.userEmail} onChange={(event) => handleChange(event, 'userEmail')}>
-                                                    <option>Select User Email</option>
-                                                    {
-                                                        UserList.map((user, index) => {
-                                                            return (
-                                                                <option key={user.userId} value={user.userId}>{user.fullname}</option>
+                                            <div className='row'>
+                                                <div className='col-md-6'>
+                                                    <label>Project Id</label>
+                                                    <select className='form-select' value={ProjectUserobj.projectId}
+                                                        onChange={(event) => handleChange(event, 'projectId')}>
+                                                        <option>Select Project Id</option>
+                                                        {
+                                                            projectList.map((project, index) => {
+                                                                return (
+                                                                    <option value={project.projectId}>{project.projectName}</option>
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
+                                                </div>
+                                                <div className='col-md-6'>
+                                                    <label>Email</label>
+                                                    <select className='form-select' value={ProjectUserobj.userEmail} onChange={(event) => handleChange(event, 'userEmail')}>
+                                                        <option>Select User Email</option>
+                                                        {
+                                                            UserList.map((user, index) => {
+                                                                return (
+                                                                    <option key={user.userId} value={user.userId}>{user.fullname}</option>
 
-                                                            )
-                                                        })
-                                                    }
-                                                </select>
-                                            </div>
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
+                                                </div>
 
 
-                                        </div>
+                                            </div>
 
-                                        <div className='row'>
-                                            <div className='col-md-6'>
-                                                <label>Role In Project</label>
-                                                <input type="text" className='form-control' value={ProjectUserobj.roleInProject}
-                                                    placeholder='Enter Role In Project' onChange={(event) => handleChange(event, 'roleInProject')}></input>
+                                            <div className='row'>
+                                                <div className='col-md-6'>
+                                                    <label>Role In Project</label>
+                                                    <input type="text" className='form-control' value={ProjectUserobj.roleInProject}
+                                                        placeholder='Enter Role In Project' onChange={(event) => handleChange(event, 'roleInProject')}></input>
+                                                </div>
+                                                <div className='col-md-6'>
+                                                    <label>technicalStack</label>
+                                                    <input type="text" className='form-control' value={ProjectUserobj.technicalStack}
+                                                        placeholder='Enter technical Stack' onChange={(event) => handleChange(event, 'technicalStack')}></input>
+                                                </div>
                                             </div>
-                                            <div className='col-md-6'>
-                                                <label>technicalStack</label>
-                                                <input type="text" className='form-control' value={ProjectUserobj.technicalStack}
-                                                    placeholder='Enter technical Stack' onChange={(event) => handleChange(event, 'technicalStack')}></input>
-                                            </div>
-                                        </div>
 
-                                        <div className='row'>
-                                            <div className='col-md-6'>
-                                                <label>userLogo</label>
-                                                <input type="text" className='form-control' value={ProjectUserobj.userLogo}
-                                                    placeholder='Enter user Logo' onChange={(event) => handleChange(event, 'userLogo')}></input>
+                                            <div className='row'>
+                                                <div className='col-md-6'>
+                                                    <label>userLogo</label>
+                                                    <input type="text" className='form-control' value={ProjectUserobj.userLogo}
+                                                        placeholder='Enter user Logo' onChange={(event) => handleChange(event, 'userLogo')}></input>
+                                                </div>
+                                                <div className='col-md-6'>
+                                                    <label>ProjectLogo</label>
+                                                    <input type="text" className='form-control' value={ProjectUserobj.projectLogo}
+                                                        placeholder='Enter Project Logo' onChange={(event) => handleChange(event, 'projectLogo')} ></input>
+                                                </div>
                                             </div>
-                                            <div className='col-md-6'>
-                                                <label>ProjectLogo</label>
-                                                <input type="text" className='form-control' value={ProjectUserobj.projectLogo}
-                                                    placeholder='Enter Project Logo' onChange={(event) => handleChange(event, 'projectLogo')} ></input>
-                                            </div>
-                                        </div>
-                                        <div className='row'>
-                                        <div className='col-md-6'>
-                                            <input type="checkbox" placeholder="Enter Is Active" 
-                                                onChange={(event) => { updateCheckboxValue(event, "isActive"); }} checked={ProjectUser.isActive}
-                                            />
-                                            <label>Is Active</label>
+                                            <div className='row'>
+                                                <div className='col-md-6'>
+                                                    <input type="checkbox" placeholder="Enter Is Active"
+                                                        onChange={(event) => { updateCheckboxValue(event, "isActive"); }} checked={ProjectUser.isActive}
+                                                    />
+                                                    <label>Is Active</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </Modal.Body>
-                        <Modal.Footer style={{ display: 'flex', justifyContent: 'center' }}>
-                            <div>
-                                {
-                                    ProjectUserobj.projectUserId == 0 &&
-                                    <Button variant='success' onClick={AddUsers}>Add</Button>
+                            </Modal.Body>
+                            <Modal.Footer style={{ display: 'flex', justifyContent: 'center' }}>
+                                <div>
+                                    {
+                                        ProjectUserobj.projectUserId == 0 &&
+                                        <Button variant='success' onClick={AddUsers}>Add</Button>
 
 
-                                }
-                                {
-                                    ProjectUserobj.projectUserId != 0 &&
-                                    <Button variant='success' onClick={UpdateProjectUser}>Update</Button>
+                                    }
+                                    {
+                                        ProjectUserobj.projectUserId != 0 &&
+                                        <Button variant='success' onClick={UpdateProjectUser}>Update</Button>
 
-                                }
-                                <Button variant='danger' className='m-2' onClick={() => setShow(false)}>Cancel</Button>
+                                    }
+                                    <Button variant='danger' className='m-2' onClick={() => setShow(false)}>Cancel</Button>
 
-                            </div>
-                        </Modal.Footer>
-                    </Modal>
+                                </div>
+                            </Modal.Footer>
+                        </Modal>
+                    </div>
                 </div>
             </div>
-        </div>
         </>
-       
+
     );
 };
 
