@@ -10,10 +10,9 @@ import { deleteData, getData, postData } from "../Service/Service.js";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { VALIDATION_REQUIRED } from "../core/constant/Constant";
-import { FaEdit } from "react-icons/fa";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash,FaSyncAlt } from "react-icons/fa";
 import { AgGridReact } from "ag-grid-react";
-import { FaUser } from "react-icons/fa";
+import { FaPenSquare,FaPlus, FaUser,FaEdit } from 'react-icons/fa';
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Spinner from 'react-bootstrap/Spinner';
@@ -241,7 +240,7 @@ const[isLoading,setisLoading]=useState(false);
                 </div>
                 <div className="col-3 text-end">
                   <button className="btn btn-primary" onClick={openModal}>
-                    <FaUser /> Add User
+                    <FaPlus/> Add User
                   </button>
                 </div>
               </div>
@@ -426,17 +425,21 @@ const[isLoading,setisLoading]=useState(false);
           </Modal.Body>
           <Modal.Footer>
             {userData.userId === 0 ? (
-              <Button variant="primary" onClick={addUser}>
+              <>
+               <Button variant="primary" onClick={addUser}><FaPlus/>
                 Add
               </Button>
+               <Button variant="secondary" onClick={closeModal}><FaSyncAlt />
+               Reset
+             </Button>
+              </>
+             
             ) : (
-              <Button variant="primary" onClick={editUser}>
+              <Button variant="primary" onClick={editUser}><FaPenSquare />
                 Update
               </Button>
             )}
-            <Button variant="secondary" onClick={closeModal}>
-              Reset
-            </Button>
+           
           </Modal.Footer>
         </Modal>
       

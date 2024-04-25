@@ -378,7 +378,7 @@ const Master = () => {
 
     // Load Data To AgGrid
     const handleButtonClick = async (buttonId) => {
-        debugger
+        
         setLoading(true);
         setActiveButton(buttonId);
         switch (buttonId) {

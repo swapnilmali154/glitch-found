@@ -62,9 +62,9 @@ const TicketType = () => {
 
     const onDelete = (issueData) => {
         try {
-            debugger
+            
             deleteData('DeleteIssueTypeById?id=', issueData.issueTypeId).then(result => {
-                debugger
+                
                 if (result != undefined) {
                     alert(result.message);
                     getIssueTypeList();
@@ -88,7 +88,7 @@ const TicketType = () => {
     }
 
     const saveIssueType = () => {
-        debugger
+        
         try {
             postData('AddNewType', issueTypeObj).then(result => {
                 if (result != undefined) {
@@ -109,7 +109,7 @@ const TicketType = () => {
     }
 
     const UpdateIssueType = () => {
-        debugger
+        
         try {
             postData('UpdateIssueType', issueTypeObj).then(result => {
                 if (result != undefined) {

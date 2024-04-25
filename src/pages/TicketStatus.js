@@ -103,9 +103,9 @@ const TicketStatus = () => {
     const deleteIssueStatus = (statusdata) => {
         
         try {
-            debugger
+            
             deleteData('DeleteStatusById?id=', statusdata.statusid).then(result => {
-                debugger
+                
                 if (result != undefined) {
                     alert(result.message);
                     getissueSatusList();

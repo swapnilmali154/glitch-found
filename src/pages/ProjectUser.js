@@ -8,6 +8,7 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Spinner from 'react-bootstrap/Spinner';
+import { FaPenSquare, FaPlus, FaSyncAlt, FaEdit } from 'react-icons/fa';
 const ProjectUser = () => {
     const [ProjectUserList, setProjectUserList] = useState([]);
     const [ProjectUserobj, setProjectUserobj] = useState({
@@ -172,7 +173,7 @@ const ProjectUser = () => {
                     <Card>
                         <Card.Header className="d-flex justify-content-between">
                             <h4> Project User List</h4>
-                            <Button onClick={handleShow}>Add New</Button>
+                            <Button onClick={handleShow}><FaPlus />Add New</Button>
                         </Card.Header>
                         <Card.Body>
                             {
@@ -326,20 +327,23 @@ const ProjectUser = () => {
                                     </div>
                                 </div>
                             </Modal.Body>
-                            <Modal.Footer style={{ display: 'flex', justifyContent: 'center' }}>
+                            <Modal.Footer >
                                 <div>
                                     {
                                         ProjectUserobj.projectUserId == 0 &&
-                                        <Button variant='success' onClick={AddUsers}>Add</Button>
+                                        <>
+                                            <Button variant='primary' className='m-2' onClick={AddUsers}><FaPlus />Add</Button>
 
+                                            <Button variant="secondary"><FaSyncAlt />
+                                                Reset
+                                            </Button></>
 
                                     }
                                     {
                                         ProjectUserobj.projectUserId != 0 &&
-                                        <Button variant='success' onClick={UpdateProjectUser}>Update</Button>
+                                        <Button variant='primary' onClick={UpdateProjectUser}><FaPenSquare />Update</Button>
 
                                     }
-                                    <Button variant='danger' className='m-2' onClick={() => setShow(false)}>Cancel</Button>
 
                                 </div>
                             </Modal.Footer>

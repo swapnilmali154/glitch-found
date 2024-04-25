@@ -20,7 +20,7 @@ const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
                     setallProject(result);
                 }
                 else {
-                    alert('in get all projects');
+                    alert('error in get all projects');
                 }
             })
         } catch (error) {
@@ -32,7 +32,7 @@ const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
         getAllProjects();
     }, []);
     const handleProjectSelect = (projectId, shortName) => {
-        debugger
+        
         setSelectedProject({ projectId, shortName });
         navigate(`/board/${projectId}/${encodeURIComponent(shortName)}`);
        // navigate(`/board:/${projectId}`);

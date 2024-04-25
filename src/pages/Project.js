@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Spinner from 'react-bootstrap/Spinner';
 import { MyContext } from '../MyContextProvider.js';
+import { FaPenSquare,FaPlus, FaUser,FaEdit,FaSyncAlt } from 'react-icons/fa';
 
 const Project = () => {
     const { loggedUserData, updateLoggedUserData } = useContext(MyContext);
@@ -138,9 +139,9 @@ const Project = () => {
 
     const onDelete = (projectData) => {
         try {
-            debugger
+            
             deleteData('DeleteProjectById?id=', projectData.projectId).then(result => {
-                debugger
+                
                 if (result != undefined) {
                     notify(result.message);
                     // getProjectList();
@@ -438,18 +439,20 @@ const Project = () => {
                             </Modal.Body>
                             <Modal.Footer >
                                 <div>
+
                                     {
                                         projectObj.projectId == 0 &&
-                                        <Button variant='success' onClick={saveProject}>Add</Button>
+                                        <Button variant='primary' onClick={saveProject}><FaPlus/>Add</Button>
                                     }
                                     {
                                         projectObj.projectId != 0 &&
-                                        <Button variant='success' onClick={UpdateProject}>Update</Button>
+                                        <Button variant='primary' onClick={UpdateProject}><FaPenSquare />Update</Button>
 
                                     }
                                     {/* <Button variant='danger' className='m-2' onClick={() => setShow(false)}>Cancel</Button> */}
-                                    <Button variant='secondary' className='m-2' onClick={resetProjectObj}>Reset</Button>
-
+                                    <Button variant='secondary' className='m-2' onClick={resetProjectObj}><FaSyncAlt />Reset</Button>
+                                    
+               
                                 </div>
                             </Modal.Footer>
                         </Modal>
