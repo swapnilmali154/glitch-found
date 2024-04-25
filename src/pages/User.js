@@ -144,7 +144,7 @@ const[isLoading,setisLoading]=useState(false);
         if (result.result) {
         //  notify("User deleted successfully");
           toast.success("User deleted successfully")
-          // getUsers();
+          getUsers();
         } else {
           notify(result.message);
         }
@@ -169,6 +169,7 @@ const[isLoading,setisLoading]=useState(false);
             onClose: () => {
                 setTimeout(() => {
                   closeModal();
+                  getUsers();
 
                 }, 1000); // Adjust the delay as needed
             },
@@ -176,7 +177,7 @@ const[isLoading,setisLoading]=useState(false);
           // getUsers();
           // closeModal();
         } else {
-         // notify(result.message);
+        
           toast.error(result.message)
         }
       });
@@ -200,11 +201,12 @@ const[isLoading,setisLoading]=useState(false);
             onClose: () => {
                 setTimeout(() => {
                   closeModal();
+                  getUsers();
 
                 }, 1000); // Adjust the delay as needed
             },
         });
-          // getUsers();
+         
          
         } else {
           toast.error(result.message);
