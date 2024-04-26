@@ -140,15 +140,7 @@ const Board = (props) => {
         getUserList();
 
     }, [projectId, getAllIssues]);
-    // useEffect(() => {
 
-    //     const todoIssue = getAllIssues.filter(issue=>issue.status =='To do');
-    //     settoDoissueCount(todoIssue.length);
-    //     const inProgressissues = getAllIssues.filter(issue=>issue.status =='In Progress');
-    //     setinProgressissueCount(inProgressissues.length);
-    //     const doneIssues = getAllIssues.filter(issue=>issue.status=='Done');
-    //     setdoneissueCount(doneIssues.length);
-    // }, [projectId,getAllIssues]);
 
     const updateIssue = (e) => {
         e.preventDefault();
@@ -173,48 +165,48 @@ const Board = (props) => {
             <div className='mt-5'></div>
             <div className='row mt-3'>
                 <h5 className='text-start mb-2'>{shortName}</h5>
-               
+
                 <div className='container-fluid'>
-                <div className='row mt-3'>
-    {statusList.map(status => (
-        <div key={status.statusId} className='col-md-2 col-sm-4 col-6 mt-2' style={{width:"20%"}}> 
-            <Card>
-                <Card.Header className='text-start bg-secondary text-white' style={{ padding: 1 }}>
-                    <p className='mx-3'>{status.status} <span>{getAllIssues.filter(issue => issue.status === status.status).length}</span>&nbsp;Issues</p>
-                </Card.Header>
-                <CardBody>
-                    {getAllIssues.filter(issue => issue.status === status.status).length > 0 ? (
-                        getAllIssues.map((issue, index) => {
-                            return issue.status === status.status && (
-                                <Card key={index} className='mb-2'>
-                                    <Card.Body style={{ padding: 10 }}>
-                                        <div className="my-1 fw-bold text-start">{issue.summary.slice(0, 16)}</div>
-                                        <div className="row">
-                                            <div className="col-4">
-                                                <p className="text-muted space-font m-0 pointer">{issue.issueGuid}</p>
-                                            </div>
-                                            <div className="col-8 text-end">
-                                                <p className="text-muted space-font m-0">{issue.assignedToUser}&nbsp;
-                                                    <span>
-                                                        <FaEdit onClick={() => getIssueListbyissueId(issue.issueId)} />
-                                                    </span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </Card.Body>
+                    <div className='row mt-3'>
+                        {statusList.map(status => (
+                            <div key={status.statusId} className='col-md-2 col-sm-4 col-6 mt-2' style={{ width: "20%" }}>
+                                <Card>
+                                    <Card.Header className='text-start bg-secondary text-white' style={{ padding: 1 }}>
+                                        <p className='mx-3'>{status.status} <span>{getAllIssues.filter(issue => issue.status === status.status).length}</span>&nbsp;Issues</p>
+                                    </Card.Header>
+                                    <CardBody>
+                                        {getAllIssues.filter(issue => issue.status === status.status).length > 0 ? (
+                                            getAllIssues.map((issue, index) => {
+                                                return issue.status === status.status && (
+                                                    <Card key={index} className='mb-2'>
+                                                        <Card.Body style={{ padding: 10 }}>
+                                                            <div className="my-1 fw-bold text-start">{issue.summary.slice(0, 16)}</div>
+                                                            <div className="row">
+                                                                <div className="col-4">
+                                                                    <p className="text-muted space-font m-0 pointer">{issue.issueGuid}</p>
+                                                                </div>
+                                                                <div className="col-8 text-end">
+                                                                    <p className="text-muted space-font m-0">{issue.assignedToUser}&nbsp;
+                                                                        <span>
+                                                                            <FaEdit onClick={() => getIssueListbyissueId(issue.issueId)} />
+                                                                        </span>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </Card.Body>
+                                                    </Card>
+                                                );
+                                            })
+                                        ) : (
+                                            <div className="text-center text-muted mt-3">Issue not found</div>
+                                        )}
+                                    </CardBody>
                                 </Card>
-                            );
-                        })
-                    ) : (
-                        <div className="text-center text-muted mt-3">Issue not found</div>
-                    )}
-                </CardBody>
-            </Card>
-        </div>
-    ))}
-</div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-               
+
 
 
             </div>
@@ -320,7 +312,7 @@ const Board = (props) => {
                                         <input type="checkbox" name="" id="" /><span>Create another issue</span>
                                     </div>
                                     <div>
-                                    <button type="submit" className="btn btn-primary" >Update</button>
+                                        <button type="submit" className="btn btn-primary" >Update</button>
                                     </div>
                                 </div>
                             </form>

@@ -203,7 +203,7 @@ const[isLoading,setisLoading]=useState(false);
                   closeModal();
                   getUsers();
 
-                }, 1000); // Adjust the delay as needed
+                }, 0); // Adjust the delay as needed
             },
         });
          
