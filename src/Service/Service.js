@@ -3,6 +3,7 @@ const url = "https://onlinetestapi.gerasim.in/api/Glitch/";
 
 const getData = async (endpoint) => {
     try {
+      
         const result = await axios.get(`${url}${endpoint}`);
         return result.data.data;
     } catch (error) {

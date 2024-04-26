@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Card, Row, Col, Modal } from "react-bootstrap";
-import { deleteData, getData, postData } from '../Service/Service.js';
+import {getData, postData , deleteData} from '../Service/Service.js';
 import '../Service/Main.css'
 import { AgGridReact } from 'ag-grid-react';
 import "ag-grid-community/styles/ag-grid.css";
@@ -9,25 +9,38 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Spinner from 'react-bootstrap/Spinner';
 import { FaPenSquare, FaPlus, FaSyncAlt, FaEdit } from 'react-icons/fa';
+import {  toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const ProjectUser = () => {
     const [ProjectUserList, setProjectUserList] = useState([]);
+    // const [ProjectUserobj, setProjectUserobj] = useState({
+    //     "projectId": 0,
+    //     "fullName": "",
+    //     "userLogo": "",
+    //     "projectLogo": "",
+    //     "userId": 0,
+    //     "userEmail": "",
+    //     "projectName": "",
+    //     "projectUserId": 0,
+    //     "roleInProject": "",
+    //     "addedDate": "",
+    //     "isActive": "",
+    //     "technicalStack": ""
+    // })
     const [ProjectUserobj, setProjectUserobj] = useState({
-        "projectId": 0,
-        "fullName": "",
-        "userLogo": "",
-        "projectLogo": "",
-        "userId": 0,
-        "userEmail": "",
-        "projectName": "",
         "projectUserId": 0,
+        "userId": 0,
+        "projectId": 0,
         "roleInProject": "",
-        "addedDate": "",
-        "isActive": "",
+        "AddedDate": "",
+        "isActive": true,
         "technicalStack": ""
     })
     const [isLoading, setisLoading] = useState(false);
     const [projectList, setprojectList] = useState([]);
     const [UserList, setUserList] = useState([]);
+    const [Roles, setAllRoles] = useState([]);
     const pagination = true;
     const paginationPageSize = 10;
     const paginationPageSizeSelector = [10, 20, 30];
@@ -49,10 +62,15 @@ const ProjectUser = () => {
     }
     const getAllProjectList = async () => {
         getData('GetAllProject').then(result => {
-
             setprojectList(result);
         })
     }
+    const getAllRoleList = async () => {
+        getData('GetAllRoles').then(result => {
+            setAllRoles(result);
+        })
+    }
+
     const getAllUsersList = async () => {
         getData('GetAllUsers').then(result => {
             try {
@@ -76,6 +94,7 @@ const ProjectUser = () => {
         getAllProjectUserList();
         getAllProjectList();
         getAllUsersList();
+        getAllRoleList();
     }, []);
     const addSerialNumbers = (data) => {
         return data.map((projectList, index) => {
@@ -101,11 +120,13 @@ const ProjectUser = () => {
 
     }
 
-    const onDelete = (Project) => {
+    const onDelete = (user) => {
         try {
-            getData('DeleteUserFromProjectByUserId?id=', Project.userId).then((result) => {
+           
+            deleteData('DeleteUserFromProjectByUserId?id=', user.userId).then((result) => {
                 if (result != undefined) {
-                    alert(result.message);
+                  //  alert(result.message);
+                  toast.success("User deleted successfully")
                     getAllProjectList();
                 }
             })
@@ -130,20 +151,29 @@ const ProjectUser = () => {
 
     }
     const resetProjectUserobj = () => {
+        // setProjectUserobj({
+        //     "projectId": 0,
+        //     "fullName": "",
+        //     "userLogo": "",
+        //     "projectLogo": "",
+        //     "userId": 0,
+        //     "userEmail": "",
+        //     "projectName": "",
+        //     "projectUserId": 0,
+        //     "roleInProject": "",
+        //     "addedDate": "",
+        //     "isActive": "",
+        //     "technicalStack": ""
+        // });
         setProjectUserobj({
-            "projectId": 0,
-            "fullName": "",
-            "userLogo": "",
-            "projectLogo": "",
-            "userId": 0,
-            "userEmail": "",
-            "projectName": "",
             "projectUserId": 0,
+            "userId": 0,
+            "projectId": 0,
             "roleInProject": "",
-            "addedDate": "",
-            "isActive": "",
+            "AddedDate": "",
+            "isActive": true,
             "technicalStack": ""
-        });
+        })
     };
 
     const [colDefs, setColDefs] = useState([
@@ -224,19 +254,8 @@ const ProjectUser = () => {
                                 <div >
                                     <div >
                                         <div className='card-body'>
-                                            <div className='row'>
-                                                <div className='col-md-6'>
-                                                    <label>FullName</label>
-                                                    <input type="text" className='form-control' value={ProjectUserobj.fullName}
-                                                        placeholder='Enter full Name' onChange={(event) => handleChange(event, 'fullName')}></input>
-                                                </div>
-                                                <div className='col-md-6'>
-                                                    <label>UserEmail</label>
-                                                    <input type="Email" className='form-control' value={ProjectUserobj.userEmail}
-                                                        placeholder='Enter user Email' onChange={(event) => handleChange(event, 'userEmail')} ></input>
-                                                </div>
-                                            </div>
-                                            <div className='row'>
+
+                                            {/* <div className='row'>
                                                 <div className='col-md-6'>
                                                     <label>User Id</label>
                                                     <select className='form-select' value={ProjectUserobj.projectUserId}
@@ -250,36 +269,36 @@ const ProjectUser = () => {
                                                             })
                                                         }
                                                     </select>
-                                                </div>
-                                                <div className='col-md-6'>
+                                                </div> */}
+                                            {/* <div className='col-md-6'>
                                                     <label> Added Date </label>
                                                     <input type='Date' className='form-control' value={ProjectUserobj.addedDate}
                                                         placeholder='Select Date' onChange={(event) => handleChange(event, 'addedDate')}></input>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             <div className='row'>
                                                 <div className='col-md-6'>
                                                     <label>Project Id</label>
                                                     <select className='form-select' value={ProjectUserobj.projectId}
                                                         onChange={(event) => handleChange(event, 'projectId')}>
-                                                        <option>Select Project Id</option>
+                                                        <option>Select Project Name</option>
                                                         {
                                                             projectList.map((project, index) => {
                                                                 return (
-                                                                    <option value={project.projectId}>{project.projectName}</option>
+                                                                    <option value={project.projectId}>{project.fullName}</option>
                                                                 )
                                                             })
                                                         }
                                                     </select>
                                                 </div>
                                                 <div className='col-md-6'>
-                                                    <label>Email</label>
-                                                    <select className='form-select' value={ProjectUserobj.userEmail} onChange={(event) => handleChange(event, 'userEmail')}>
-                                                        <option>Select User Email</option>
+                                                    <label>Name</label>
+                                                    <select className='form-select' value={ProjectUserobj.userId} onChange={(event) => handleChange(event, 'userId')}>
+                                                        <option>Select User </option>
                                                         {
                                                             UserList.map((user, index) => {
                                                                 return (
-                                                                    <option key={user.userId} value={user.userId}>{user.fullname}</option>
+                                                                    <option key={user.userId} value={user.userId}>{user.fullName}</option>
 
                                                                 )
                                                             })
@@ -293,8 +312,19 @@ const ProjectUser = () => {
                                             <div className='row'>
                                                 <div className='col-md-6'>
                                                     <label>Role In Project</label>
-                                                    <input type="text" className='form-control' value={ProjectUserobj.roleInProject}
-                                                        placeholder='Enter Role In Project' onChange={(event) => handleChange(event, 'roleInProject')}></input>
+                                                    {/* <input type="text" className='form-control' value={ProjectUserobj.roleInProject}
+                                                        placeholder='Enter Role In Project' onChange={(event) => handleChange(event, 'roleInProject')}></input> */}
+                                                 <select className='form-select' value={ProjectUserobj.roleInProject} onChange={(event) => handleChange(event, 'roleInProject')}>
+                                                        <option>Select Role </option>
+                                                        {
+                                                            Roles.map((roll, index) => {
+                                                                return (
+                                                                    <option key={roll.role} value={roll.role}>{roll.role}</option>
+
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
                                                 </div>
                                                 <div className='col-md-6'>
                                                     <label>technicalStack</label>
@@ -303,7 +333,7 @@ const ProjectUser = () => {
                                                 </div>
                                             </div>
 
-                                            <div className='row'>
+                                            {/* <div className='row'>
                                                 <div className='col-md-6'>
                                                     <label>userLogo</label>
                                                     <input type="text" className='form-control' value={ProjectUserobj.userLogo}
@@ -314,7 +344,7 @@ const ProjectUser = () => {
                                                     <input type="text" className='form-control' value={ProjectUserobj.projectLogo}
                                                         placeholder='Enter Project Logo' onChange={(event) => handleChange(event, 'projectLogo')} ></input>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             <div className='row'>
                                                 <div className='col-md-6'>
                                                     <input type="checkbox" placeholder="Enter Is Active"
