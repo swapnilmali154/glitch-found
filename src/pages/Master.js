@@ -153,24 +153,33 @@ const Master = () => {
                 setvalidationerror(true);
                 if (issueTypeObj.issueType !== "") {
                     setLoading(true);
-
-                    postData(ADD_NEW_TYPE, issueTypeObj).then(result => {
-                        if (result != undefined) {
-
-                            toast.success(result.message, {
-                                onClose: () => {
-                                    setTimeout(() => {
-
-                                        getIssueTypeList();
-                                        handleModal1Close();
-                                        setLoading(false);
-
-                                    }, 500); // Adjust the delay as needed
-                                },
-                            });
-
-                        }
-                    })
+                    const existingIssueType = issueTypeList.find(type => type.issueType.toLowerCase() === issueTypeObj.issueType.toLowerCase());
+                    if (existingIssueType) {
+                        toast.error("Issue type already exists");
+                        setLoading(false);
+                        return;
+                    }
+                    else 
+                    {
+                        postData(ADD_NEW_TYPE, issueTypeObj).then(result => {
+                            if (result != undefined) {
+    
+                                toast.success(result.message, {
+                                    onClose: () => {
+                                        setTimeout(() => {
+    
+                                            getIssueTypeList();
+                                            handleModal1Close();
+                                            setLoading(false);
+    
+                                        }, 500); // Adjust the delay as needed
+                                    },
+                                });
+    
+                            }
+                        })
+                    }
+                  
                 }
 
             } catch (error) {
@@ -183,32 +192,37 @@ const Master = () => {
             if (issueObj.status !== '' && issueObj.orderNo !== 0 && issueObj.isActive != false) {
                 try {
                     setLoading(true)
-                    const result = postData(ADD_NEW_STATUS, issueObj).then(result => {
-                        if (result !== undefined) {
-                            setLoading(false);
-                            toast.success(result.message, {
-                                onClose: () => {
-                                    setTimeout(() => {
-                                        getissueSatusList();
-                                        setRowData(issueStatusList);
-
-                                        handleModal2Close();
-                                        setLoading(false);
-
-                                    }, 500); // Adjust the delay as needed
-                                },
-                            });
-                        }
-                    });
-
-
+                    const existingStatus = issueStatusList.find(status => status.status.toLowerCase() === issueObj.status.toLowerCase());
+                    if (existingStatus) {
+                        toast.error("Status already exists");
+                        setLoading(false);
+                        return;
+                    }
+                    else
+                    {
+                        postData(ADD_NEW_STATUS, issueObj).then(result => {
+                            if (result !== undefined) {
+                                setLoading(false);
+                                toast.success(result.message, {
+                                    onClose: () => {
+                                        setTimeout(() => {
+                                            getissueSatusList();
+                                            setRowData(issueStatusList);
+    
+                                            handleModal2Close();
+                                            setLoading(false);
+    
+                                        }, 500); // Adjust the delay as needed
+                                    },
+                                });
+                            }
+                        });
+                    }
+    
                 } catch (error) {
                     toast.error(error);
                 }
-
             }
-
-
         }
 
     }
