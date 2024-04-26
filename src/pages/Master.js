@@ -470,7 +470,7 @@ const Master = () => {
                                                 <Card.Title>
                                                     {activeButton === 1 ? "Issue Type List" : "Issue Status List"}
                                                 </Card.Title>
-                                                <Button onClick={displayModal}>Add New  <FontAwesomeIcon icon={faPlus} /></Button>
+                                                <Button onClick={displayModal}><FontAwesomeIcon icon={faPlus} />Add New  </Button>
                                             </Card.Header>
                                             <Card.Body className="d-flex justify-content-center">
                                                 {
