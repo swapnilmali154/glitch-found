@@ -168,13 +168,15 @@ const[isLoading,setisLoading]=useState(false);
     if (
       userData.fullName !== "" &&
       userData.emailId !== "" &&
-      userData.createdDate !== "" &&
       userData.password !== "" &&
       userData.technicalStack !== "" &&
       userData.userLogo !== ""
     ) {
       postData(CREATE_USER, userData).then((result) => {
+        
         if (result.result) {
+          
+         // notify("User created successfully");
           toast.success(result.message, {
             onClose: () => {
               setTimeout(() => {
@@ -204,10 +206,11 @@ const[isLoading,setisLoading]=useState(false);
         if (result.result) {
           toast.success(result.message, {
             onClose: () => {
-              setTimeout(() => {
-                closeModal();
-                getUsers();
-              }, 1000);
+                setTimeout(() => {
+                  closeModal();
+                  getUsers();
+
+                }, 1000); // Adjust the delay as needed
             },
           });
         } else {
@@ -363,36 +366,7 @@ const[isLoading,setisLoading]=useState(false);
                       <div className="text-danger">{VALIDATION_REQUIRED}</div>
                     )}
                   </div>
-                  <div className="col-md-6 mb-2">
-                    <label>Create Date:</label>
-                    <input
-                      type="date"
-                      placeholder="Enter Email"
-                      className="form-control"
-                      onChange={(event) => {
-                        updateFormValue(event, "createdDate");
-                      }}
-                      value={userData.createdDate.split("T")[0]}
-                    />
-                    {isFormSubmitted && userData.createdDate === "" && (
-                      <div className="text-danger">{VALIDATION_REQUIRED}</div>
-                    )}
-                  </div>
-                  <div className="col-md-6 mb-2">
-                    <label>Technical Stack:</label>
-                    <input
-                      type="text"
-                      placeholder="Enter Technical Stack"
-                      className="form-control"
-                      onChange={(event) => {
-                        updateFormValue(event, "technicalStack");
-                      }}
-                      value={userData.technicalStack}
-                    />
-                    {isFormSubmitted && userData.technicalStack === "" && (
-                      <div className="text-danger">{VALIDATION_REQUIRED}</div>
-                    )}
-                  </div>
+                 
                   <div className="col-md-6">
                     <label>User Logo:</label>
                     <input
@@ -421,6 +395,22 @@ const[isLoading,setisLoading]=useState(false);
                       checked={userData.isActive}
                     />
                     {isFormSubmitted && userData.isActive === "" && (
+                      <div className="text-danger">{VALIDATION_REQUIRED}</div>
+                    )}
+                  </div>
+                 
+                  <div className="col-md-12 mb-2">
+                    <label>Technical Stack:</label>
+                    <input
+                      type="text"
+                      placeholder="Enter Technical Stack"
+                      className="form-control"
+                      onChange={(event) => {
+                        updateFormValue(event, "technicalStack");
+                      }}
+                      value={userData.technicalStack}
+                    />
+                    {isFormSubmitted && userData.technicalStack === "" && (
                       <div className="text-danger">{VALIDATION_REQUIRED}</div>
                     )}
                   </div>

@@ -84,10 +84,13 @@ const Master = () => {
 
     /************8 Get All issue Type */
     const getIssueTypeList = async () => {
+        setLoading(true);
         getData(GET_ALL_ISSUE_TYPE).then(result => {
             try {
                 if (result != undefined) {
+
                     setIssueTypeList(result);
+                    setLoading(false);
                 }
                 else {
                     
@@ -104,9 +107,11 @@ const Master = () => {
     /***** Get All Issue Status */
     const getissueSatusList = () => {
         try {
+            setLoading(true);
             getData(GET_ALL_ISSUE_STATUS).then(result => {
                 if (result != undefined) {
                     setIssueStatus(result);
+                    setLoading(false);
                 }
                 else {
                  
@@ -464,30 +469,29 @@ const Master = () => {
                         <div className='col-md'>
                             <div className="row mt-3 container-fluid">
                                 <div className="row mt-3">
-                                    <div className="col-md-12">
+                                    <div className="col-6" style={{marginLeft:'23%'}}>
                                         <Card>
                                             <Card.Header className="d-flex justify-content-between">
                                                 <Card.Title>
                                                     {activeButton === 1 ? "Issue Type List" : "Issue Status List"}
                                                 </Card.Title>
-                                                <Button onClick={displayModal}>Add New  <FontAwesomeIcon icon={faPlus} /></Button>
+                                                <Button onClick={displayModal}><FontAwesomeIcon icon={faPlus} />Add New  </Button>
                                             </Card.Header>
                                             <Card.Body className="d-flex justify-content-center">
                                                 {
-                                                    loading ? (<div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
-
+                                                loading ? (<div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
                                                     <Button variant="primary" disabled>
-                                                        <Spinner
-                                                            as="span"
-                                                            animation="grow"
-                                                            size="sm"
-                                                            role="status"
-                                                            aria-hidden="true"
-                                                        />
-                                                        Loading...
-                                                    </Button>
-                                                </div>) :( <div
-                                                    className="ag-theme-quartz align-item-center " style={{ height: 500, width: '55%' }}
+                                                  <Spinner
+                                                    as="span"
+                                                    animation="grow"
+                                                    size="sm"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                  />
+                                                  Loading...
+                                                </Button>
+                                                    </div>) :(  <div
+                                                    className="ag-theme-quartz align-item-center " style={{ height: 500, width: '100%' }}
                                                 >
                                                     <AgGridReact
                                                         columnDefs={columnDefs}

@@ -240,7 +240,7 @@ const Project = () => {
 
                         <Card.Header className="d-flex justify-content-between ">
                             <h4>Project List</h4>
-                            <Button onClick={handleShow}>Add New <FontAwesomeIcon icon={faPlus} /></Button>
+                            <Button onClick={handleShow}><FontAwesomeIcon icon={faPlus} />Add New </Button>
                         </Card.Header>
                         <Card.Body>{
                             isLoading ?

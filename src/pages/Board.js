@@ -6,20 +6,20 @@ import { getData, getDataById, postData } from '../Service/Service.js';
 import { MyContext } from '../MyContextProvider';
 import { useParams } from 'react-router-dom';
 const Board = (props) => {
-     const {projectId,shortName} = useParams();
-     console.log(projectId);
+    const { projectId, shortName } = useParams();
+    console.log(projectId);
     const { loggedUserData, updateLoggedUserData } = useContext(MyContext);
     const [getAllIssues, setgetAllIssues] = useState([]);
     const [issulistByIssueId, setissulistByIssueId] = useState([]);
     const [projectList, setprojectList] = useState([]);
     const [IssueTypeList, setIssueTypeList] = useState([]);
     const [statusList, setstatusList] = useState([]);
-    const [userList, setuserList] = useState([]); 
+    const [userList, setuserList] = useState([]);
     const [projectAssignee, setprojectAssignee] = useState([]);
     const [show, setShow] = useState(false);
-    const[toDoissueCount,settoDoissueCount]=useState(0);
-    const[inProgressissueCount,setinProgressissueCount]=useState(0);
-    const[doneissueCount,setdoneissueCount]=useState(0);
+    const [toDoissueCount, settoDoissueCount] = useState(0);
+    const [inProgressissueCount, setinProgressissueCount] = useState(0);
+    const [doneissueCount, setdoneissueCount] = useState(0);
     const [issueObj, setissueObj] = useState({
         issueId: 0,
         issueType: 0,
@@ -79,10 +79,10 @@ const Board = (props) => {
     }
     const getUserList = () => {
         try {
-           
+
             getData('GetAllUsers').then(result => {
                 if (result != undefined) {
-                   
+
                     setuserList(result);
                 }
                 else {
@@ -99,7 +99,7 @@ const Board = (props) => {
     const getAllIssuesbyProjectId = () => {
         try {
             getDataById(`GetAllIssuesByProjectId?id=${projectId}`).then(result => {
-               
+
                 if (result !== undefined) {
                     setgetAllIssues(result);
                 } else {
@@ -111,11 +111,11 @@ const Board = (props) => {
         }
     };
     const getIssueListbyissueId = (issueId) => {
-       
+
         try {
             getDataById(`GetIssueById?id=${issueId}`).then(result => {
                 if (result != undefined) {
-                   
+
                     setShow(true);
                     setissueObj(result);
                     //setissulistByIssueId(result);
@@ -132,30 +132,23 @@ const Board = (props) => {
 
     }
     useEffect(() => {
-        console.log('projectId',projectId);
+        console.log('projectId', projectId);
         getAllIssuesbyProjectId();
         getProjectList();
         getIssueTypeList();
         getStatusList();
         getUserList();
-      
-    }, []);
-    useEffect(() => {
-       
-        const todoIssue = getAllIssues.filter(issue=>issue.status =='To do');
-        settoDoissueCount(todoIssue.length);
-        const inProgressissues = getAllIssues.filter(issue=>issue.status =='In Progress');
-        setinProgressissueCount(inProgressissues.length);
-        const doneIssues = getAllIssues.filter(issue=>issue.status=='Done');
-        setdoneissueCount(doneIssues.length);
-    }, [projectId,getAllIssues]);
+
+    }, [projectId, getAllIssues]);
+
+
     const updateIssue = (e) => {
         e.preventDefault();
-       
+
         try {
             postData('UpdateIssue', issueObj).then(result => {
                 if (result != undefined) {
-                   
+
                     alert('Issue Updated Successfully...!');
                     setShow(false);
                 }
@@ -171,91 +164,50 @@ const Board = (props) => {
         <div>
             <div className='mt-5'></div>
             <div className='row mt-3'>
-            <h5 className='text-start mb-2'>{shortName}</h5>
-                <div className='col-md-4 mt-3'>
-                    <Card>
-                        <CardHeader className='text-start ' style={{padding:1}}>
-                            <p className='mx-3'>To Do <span>{toDoissueCount}</span>&nbsp;Issue </p>
-                        </CardHeader>
-                        <CardBody style={{padding:10}}>
-                            {getAllIssues.map((issue, index) => {
-                                return issue.status === 'To do' && (
-                                    <Card key={index} className='mb-2'>
-                                        <Card.Body>
-                                            <div className="my-1 fw-bold text-start"> {issue.summary.slice(0,16)} </div>
-                                            <div className="row">
-                                                <div className="col-4">
-                                                    <p className="text-muted space-font m-0 pointer">{issue.issueGuid}</p>
-                                                </div>
-                                                <div className="col-8 text-end">
-                                                    <p className="text-muted space-font m-0">{issue.assignedToUser}&nbsp;<span><FaEdit onClick={() => getIssueListbyissueId(issue.issueId)}></FaEdit></span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </Card.Body>
-                                    </Card>
-                                );
-                            })}
-                        </CardBody>
-                    </Card>
+                <h5 className='text-start mb-2'>{shortName}</h5>
+
+                <div className='container-fluid'>
+                    <div className='row mt-3'>
+                        {statusList.map(status => (
+                            <div key={status.statusId} className='col-md-2 col-sm-4 col-6 mt-2' style={{ width: "20%" }}>
+                                <Card>
+                                    <Card.Header className='text-start bg-secondary text-white' style={{ padding: 1 }}>
+                                        <p className='mx-3'>{status.status} <span>{getAllIssues.filter(issue => issue.status === status.status).length}</span>&nbsp;Issues</p>
+                                    </Card.Header>
+                                    <CardBody>
+                                        {getAllIssues.filter(issue => issue.status === status.status).length > 0 ? (
+                                            getAllIssues.map((issue, index) => {
+                                                return issue.status === status.status && (
+                                                    <Card key={index} className='mb-2'>
+                                                        <Card.Body style={{ padding: 10 }}>
+                                                            <div className="my-1 fw-bold text-start">{issue.summary.slice(0, 16)}</div>
+                                                            <div className="row">
+                                                                <div className="col-4">
+                                                                    <p className="text-muted space-font m-0 pointer">{issue.issueGuid}</p>
+                                                                </div>
+                                                                <div className="col-8 text-end">
+                                                                    <p className="text-muted space-font m-0">{issue.assignedToUser}&nbsp;
+                                                                        <span>
+                                                                            <FaEdit onClick={() => getIssueListbyissueId(issue.issueId)} />
+                                                                        </span>
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </Card.Body>
+                                                    </Card>
+                                                );
+                                            })
+                                        ) : (
+                                            <div className="text-center text-muted mt-3">Issue not found</div>
+                                        )}
+                                    </CardBody>
+                                </Card>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                <div className='col-md-4 mt-3'>
-                    <Card>
-                        <CardHeader className='text-start' style={{padding:1}}>
-                            <p className='mx-3'>In Progress <span>{inProgressissueCount}</span>&nbsp;Issue</p>
-                        </CardHeader>
-                        <CardBody>
-                            {getAllIssues.map((issue, index) => {
-                                return issue.status === 'In Progress' && (
-                                    <Card key={index} className='mb-2' >
-                                        <Card.Body style={{padding:10}}>
-                                            
-                                            <div className="my-1 fw-bold text-start"> {issue.summary.slice(0,16)} </div>
-                                            <div className="row">
-                                                <div className="col-4">
-                                                    <p className="text-muted space-font m-0 pointer">{issue.issueGuid}</p>
-                                                </div>
-                                                <div className="col-8 text-end">
-                                                    <p className="text-muted space-font m-0">{issue.assignedToUser}&nbsp;<span><FaEdit onClick={() => getIssueListbyissueId(issue.issueId)}></FaEdit></span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </Card.Body>
-                                    </Card>
-                                );
-                            })}
-                        </CardBody>
-                    </Card>
-                </div>
-                <div className='col-md-4 mt-3'>
-                    <Card>
-                        <CardHeader className='text-start' style={{padding:1}}>
-                            <p className='mx-3'>Done <span>{doneissueCount}</span>&nbsp;Issue</p>
-                        </CardHeader>
-                        <CardBody>
-                            {getAllIssues.map((issue, index) => {
-                                return issue.status === 'Done' && (
-                                    <Card key={index} className='mb-2'>
-                                        <Card.Body style={{padding:10}}>
-                                            <div className="my-1 fw-bold text-start"> {issue.summary.slice(0,16)} </div>
-                                            <div className="row">
-                                                <div className="col-4">
-                                                    <p className="text-muted space-font m-0 pointer">{issue.issueGuid}</p>
-                                                </div>
-                                                <div className="col-8 text-end">
-                                                    <p className="text-muted space-font m-0">{issue.assignedToUser}&nbsp;<span><FaEdit></FaEdit></span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </Card.Body>
-                                    </Card>
-                                );
-                            })}
-                        </CardBody>
-                    </Card>
 
 
-                </div>
 
             </div>
             <div className="col-md-12">
@@ -360,7 +312,6 @@ const Board = (props) => {
                                         <input type="checkbox" name="" id="" /><span>Create another issue</span>
                                     </div>
                                     <div>
-                                        <button type="button" className="btn btn-light" data-bs-dismiss="modal" onClick={() => setShow(false)} >Cancel</button>
                                         <button type="submit" className="btn btn-primary" >Update</button>
                                     </div>
                                 </div>
