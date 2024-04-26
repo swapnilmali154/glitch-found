@@ -9,6 +9,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Spinner from 'react-bootstrap/Spinner';
 import { FaPenSquare, FaPlus, FaSyncAlt, FaEdit } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+
+
 const ProjectUser = () => {
     const [ProjectUserList, setProjectUserList] = useState([]);
     const [ProjectUserobj, setProjectUserobj] = useState({
@@ -25,6 +28,25 @@ const ProjectUser = () => {
         "isActive": "",
         "technicalStack": ""
     })
+
+    const notify = (message, classN) => {
+        return new Promise((resolve) => {
+            const className = `toast-${classN}`;
+            toast(message, {
+                className: className,
+                autoClose: 2000,
+                position: "top-center",
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                onClose: () => resolve(), 
+            });
+        });
+    };
+
     const [isLoading, setisLoading] = useState(false);
     const [projectList, setprojectList] = useState([]);
     const [UserList, setUserList] = useState([]);
@@ -37,6 +59,14 @@ const ProjectUser = () => {
         setShow(true);
         resetProjectUserobj();
     };
+    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+    const openConfirmationModal = (projectUser) => {
+        setProjectUserToDelete(projectUser);
+        setConfirmationModalOpen(true);
+    };
+    const closeConfirmationModal = () => setConfirmationModalOpen(false);
+    const [projectUserToDelete, setProjectUserToDelete] = useState(null);
+
 
     const getAllProjectUserList = async () => {
         setisLoading(true);
@@ -86,7 +116,7 @@ const ProjectUser = () => {
         return (
             <React.Fragment>
                 <button style={{ marginRight: '10px' }} className='btn btn-sm btn-success ' onClick={() => onEdit(props.data)} ><FontAwesomeIcon icon={faEdit} /></button>
-                <button className='btn btn-sm btn-danger' onClick={() => onDelete(props.data)} ><FontAwesomeIcon icon={faTrash} /></button>
+                <button className='btn btn-sm btn-danger' onClick={() => openConfirmationModal(props.data)} ><FontAwesomeIcon icon={faTrash} /></button>
             </React.Fragment>
         );
     };
@@ -101,18 +131,25 @@ const ProjectUser = () => {
 
     }
 
-    const onDelete = (Project) => {
-        try {
-            getData('DeleteUserFromProjectByUserId?id=', Project.userId).then((result) => {
-                if (result != undefined) {
-                    alert(result.message);
-                    getAllProjectList();
+   
+    const onDelete = () => {
+        if (projectUserToDelete) {
+            deleteData('DeleteUserFromProjectByUserId?id=', projectUserToDelete.userId).then((result) => {
+                if (result !== undefined) {
+                    if (result.result) {
+                        toast.success("Project User deleted successfully");
+                        getAllProjectUserList();
+                    } else {
+                        notify(result.message);
+                    }
                 }
-            })
-        } catch (error) {
-            alert(error);
+            });
         }
-    }
+        closeConfirmationModal();
+    };
+
+
+
     const AddUsers = () => {
 
         try {
@@ -348,6 +385,25 @@ const ProjectUser = () => {
                                 </div>
                             </Modal.Footer>
                         </Modal>
+                        <Modal
+                            show={confirmationModalOpen} onHide={closeConfirmationModal} backdrop="static"
+                        >
+                            <Modal.Header closeButton className="bg-light">
+                                <Modal.Title>Confirmation</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                Are you sure you want to delete this project?
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={closeConfirmationModal}>
+                                    No
+                                </Button>
+                                <Button variant="primary" onClick={onDelete}>
+                                    Yes
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+
                     </div>
                 </div>
             </div>
