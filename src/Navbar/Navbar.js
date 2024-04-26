@@ -56,7 +56,7 @@ const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
     return (
         <>
 {
-    loggedUserData  &&  loggedUserData.emailId != undefined &&  (  <nav className="navbar navbar-expand-lg bg-primary fixed-top mynav pb-0 pt-0 mb-10">
+    loggedUserData  &&  loggedUserData.emailId != undefined &&  (  <nav className="navbar navbar-expand-lg bg-primary fixed-top mynav  pb-2 pt-2 mb-10">
     <div className="container-fluid">
         <a className="navbar-brand align-self-baseline" href="#"><i className="fa-solid fa-bars me-3"></i>Jira Software</a>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
@@ -92,6 +92,12 @@ const {loggedUserData ,updateLoggedUserData} = useContext(MyContext);
                                 </li>
                                 
                                
+                              
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/allUserIssues">
+                                        Assign To Me
+                                    </Link>
+                                </li>
                                 <li className="nav-item">
                                     <Link className="nav-link" onClick={()=>setShowModal(true)}>
                                         Create

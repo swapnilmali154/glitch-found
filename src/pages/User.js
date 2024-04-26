@@ -21,6 +21,8 @@ const User = () => {
   const [userList, setUserList] = useState([]);
   const [rolesList, setRolesList] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null); 
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const pagination = true;
   const paginationPageSize = 10;
@@ -92,6 +94,9 @@ const[isLoading,setisLoading]=useState(false);
     resetUserData();
   };
 
+  const openConfirmationModal = () => setConfirmationModalOpen(true);
+  const closeConfirmationModal = () => setConfirmationModalOpen(false);
+
   const updateFormValue = (event, key) => {
     setUserData((prevobj) => ({ ...prevobj, [key]: event.target.value }));
   };
@@ -138,17 +143,24 @@ const[isLoading,setisLoading]=useState(false);
   };
 
   const onDelete = (user) => {
-    deleteData(DELETE_USER_BY_ID, user.userId).then((result) => {
-      if (result !== undefined) {
-        if (result.result) {
-        //  notify("User deleted successfully");
-          toast.success("User deleted successfully")
-          getUsers();
-        } else {
-          notify(result.message);
+    setUserToDelete(user); 
+    openConfirmationModal(); 
+  };
+
+  const confirmDelete = () => {
+    if (userToDelete) {
+      deleteData(DELETE_USER_BY_ID, userToDelete.userId).then((result) => {
+        if (result !== undefined) {
+          if (result.result) {
+            toast.success("User deleted successfully");
+            getUsers();
+          } else {
+            notify(result.message);
+          }
         }
-      }
-    });
+      });
+    }
+    closeConfirmationModal(); 
   };
 
   const addUser = () => {
@@ -156,28 +168,25 @@ const[isLoading,setisLoading]=useState(false);
     if (
       userData.fullName !== "" &&
       userData.emailId !== "" &&
-      userData.createdDate !== "" &&
       userData.password !== "" &&
       userData.technicalStack !== "" &&
       userData.userLogo !== ""
     ) {
       postData(CREATE_USER, userData).then((result) => {
+        
         if (result.result) {
+          
          // notify("User created successfully");
           toast.success(result.message, {
             onClose: () => {
-                setTimeout(() => {
-                  closeModal();
-                  getUsers();
-
-                }, 1000); // Adjust the delay as needed
+              setTimeout(() => {
+                closeModal();
+                getUsers();
+              }, 1000);
             },
-        });
-          // getUsers();
-          // closeModal();
+          });
         } else {
-        
-          toast.error(result.message)
+          toast.error(result.message);
         }
       });
     }
@@ -195,18 +204,15 @@ const[isLoading,setisLoading]=useState(false);
     ) {
       postData(UPDATE_USER, userData).then((result) => {
         if (result.result) {
-        //  notify("User updated successfully");
           toast.success(result.message, {
             onClose: () => {
                 setTimeout(() => {
                   closeModal();
                   getUsers();
 
-                }, 0); // Adjust the delay as needed
+                }, 1000); // Adjust the delay as needed
             },
-        });
-         
-         
+          });
         } else {
           toast.error(result.message);
         }
@@ -232,7 +238,7 @@ const[isLoading,setisLoading]=useState(false);
     <div>
        <div className='row mt-5'></div>
 
-      <div className="row">
+      <div className="row mt-2">
         <div className="col-md-12">
           <div className="card bg-light my-2 mx-4">
             <div className="card-header bg-light">
@@ -360,36 +366,7 @@ const[isLoading,setisLoading]=useState(false);
                       <div className="text-danger">{VALIDATION_REQUIRED}</div>
                     )}
                   </div>
-                  <div className="col-md-6 mb-2">
-                    <label>Create Date:</label>
-                    <input
-                      type="date"
-                      placeholder="Enter Email"
-                      className="form-control"
-                      onChange={(event) => {
-                        updateFormValue(event, "createdDate");
-                      }}
-                      value={userData.createdDate.split("T")[0]}
-                    />
-                    {isFormSubmitted && userData.createdDate === "" && (
-                      <div className="text-danger">{VALIDATION_REQUIRED}</div>
-                    )}
-                  </div>
-                  <div className="col-md-6 mb-2">
-                    <label>Technical Stack:</label>
-                    <input
-                      type="text"
-                      placeholder="Enter Technical Stack"
-                      className="form-control"
-                      onChange={(event) => {
-                        updateFormValue(event, "technicalStack");
-                      }}
-                      value={userData.technicalStack}
-                    />
-                    {isFormSubmitted && userData.technicalStack === "" && (
-                      <div className="text-danger">{VALIDATION_REQUIRED}</div>
-                    )}
-                  </div>
+                 
                   <div className="col-md-6">
                     <label>User Logo:</label>
                     <input
@@ -421,6 +398,22 @@ const[isLoading,setisLoading]=useState(false);
                       <div className="text-danger">{VALIDATION_REQUIRED}</div>
                     )}
                   </div>
+                 
+                  <div className="col-md-12 mb-2">
+                    <label>Technical Stack:</label>
+                    <input
+                      type="text"
+                      placeholder="Enter Technical Stack"
+                      className="form-control"
+                      onChange={(event) => {
+                        updateFormValue(event, "technicalStack");
+                      }}
+                      value={userData.technicalStack}
+                    />
+                    {isFormSubmitted && userData.technicalStack === "" && (
+                      <div className="text-danger">{VALIDATION_REQUIRED}</div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -445,6 +438,25 @@ const[isLoading,setisLoading]=useState(false);
           </Modal.Footer>
         </Modal>
       
+     
+        <Modal
+          show={confirmationModalOpen}  onHide={closeConfirmationModal}    backdrop="static"  
+        >
+          <Modal.Header closeButton className="bg-light">
+            <Modal.Title>Confirmation</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Are you sure you want to delete this user?
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={closeConfirmationModal}>
+              No
+            </Button>
+            <Button variant="primary" onClick={confirmDelete}>
+              Yes
+            </Button>
+          </Modal.Footer>
+        </Modal>
        
       </div>
     </div>

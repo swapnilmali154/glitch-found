@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Spinner from 'react-bootstrap/Spinner';
 import { MyContext } from '../MyContextProvider.js';
-import { FaPenSquare,FaPlus, FaUser,FaEdit,FaSyncAlt } from 'react-icons/fa';
+import { FaPenSquare, FaPlus, FaUser, FaEdit, FaSyncAlt } from 'react-icons/fa';
 
 const Project = () => {
     const { loggedUserData, updateLoggedUserData } = useContext(MyContext);
@@ -59,6 +59,13 @@ const Project = () => {
     };
 
     const [isLoading, setIsLoading] = useState(true);
+    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+    const openConfirmationModal = (project) => {
+        setProjectToDelete(project);
+        setConfirmationModalOpen(true);
+    };
+    const closeConfirmationModal = () => setConfirmationModalOpen(false);
+    const [projectToDelete, setProjectToDelete] = useState(null);
 
     const handleModalClick = (e) => {
         e.stopPropagation();
@@ -117,7 +124,7 @@ const Project = () => {
         return (
             <React.Fragment>
                 <button style={{ marginRight: '10px' }} className='btn btn-sm btn-success' onClick={() => onEdit(props.data)} ><FontAwesomeIcon icon={faEdit} /></button>
-                <button className='btn btn-sm btn-danger' onClick={() => onDelete(props.data)} ><FontAwesomeIcon icon={faTrash} /></button>
+                <button className='btn btn-sm btn-danger' onClick={() => openConfirmationModal(props.data)} ><FontAwesomeIcon icon={faTrash} /></button>
             </React.Fragment>
         );
     };
@@ -137,30 +144,24 @@ const Project = () => {
         getProjectList();
     }
 
-    const onDelete = (projectData) => {
-        try {
-            
-            deleteData('DeleteProjectById?id=', projectData.projectId).then(result => {
-                
-                if (result != undefined) {
-                    notify(result.message);
-                    // getProjectList();
+
+    const onDelete = () => {
+        if (projectToDelete) {
+            deleteData('DeleteProjectById?id=', projectToDelete.projectId).then((result) => {
+                if (result !== undefined) {
+                    if (result.result) {
+                        toast.success("Project deleted successfully");
+                        getProjectList();
+                    } else {
+                        notify(result.message);
+                    }
                 }
-            })
-        } catch (error) {
-            notify(error);
+            });
         }
-    }
+        closeConfirmationModal();
+    };
 
-    // const [colDefs, setColDefs] = useState([
-    //     { field: "Srno", headerName: "Sr No", cellStyle: { textAlign: 'center' } },
-    //     { field: "fullName", headerName: "Full Name", cellStyle: { textAlign: 'center' } },
-    //     { field: "leadingByUserName", headerName: "Leading By User Name", cellStyle: { textAlign: 'center' } },
-    //     { field: "technologyStack", headerName: "Technology Stack", cellStyle: { textAlign: 'center' } },
-    //     { field: "createdByUserName", headerName: "Created By User Name", cellStyle: { textAlign: 'center' } },
-    //     { field: "Action", headerName: "Action", cellRenderer: CustomButtonComponent }
 
-    // ]);
     const [colDefs, setColDefs] = useState([
         {
             field: "Srno",
@@ -239,7 +240,7 @@ const Project = () => {
 
                         <Card.Header className="d-flex justify-content-between ">
                             <h4>Project List</h4>
-                            <Button onClick={handleShow}>Add New <FontAwesomeIcon icon={faPlus} /></Button>
+                            <Button onClick={handleShow}><FontAwesomeIcon icon={faPlus} />Add New </Button>
                         </Card.Header>
                         <Card.Body>{
                             isLoading ?
@@ -390,36 +391,6 @@ const Project = () => {
                                                 </div>
 
                                                 <div className='col-md-6'>
-                                                    <label>Created Date</label>
-                                                    <input type='Date' className='form-control'
-                                                        value={projectObj.createdDate} placeholder='Select Created Date'
-                                                        onChange={(event) => handleChange(event, 'createdDate')}>
-                                                    </input>
-                                                    {
-                                                        validationerror && projectObj.createdDate == '' && <div className='text-danger'>
-                                                            This field is required
-                                                        </div>
-                                                    }
-                                                </div>
-                                            </div>
-
-
-                                            <div className='row my-2'>
-                                                <div className='col-md-6'>
-                                                    <label>CreatedBy</label>
-                                                    <select className="form-select" onChange={(event) => handleChange(event, 'CreatedBy')}>
-                                                        <option>Select User</option>
-                                                        {
-                                                            userList.map((user, index) => {
-                                                                return (
-                                                                    <option value={user.userId}>{user.fullName}</option>
-                                                                )
-                                                            })
-                                                        }
-                                                    </select>
-                                                </div>
-
-                                                <div className='col-md-6'>
                                                     <label>Project Logo</label>
                                                     <input type="text" className='form-control'
                                                         value={projectObj.projectLogo} placeholder='Enter Project Logo'
@@ -431,9 +402,11 @@ const Project = () => {
                                                         </div>
                                                     }
                                                 </div>
-                                            </div>
-                                        </div>
 
+                                            </div>
+
+
+                                        </div>
                                     </div>
                                 </div>
                             </Modal.Body>
@@ -442,7 +415,7 @@ const Project = () => {
 
                                     {
                                         projectObj.projectId == 0 &&
-                                        <Button variant='primary' onClick={saveProject}><FaPlus/>Add</Button>
+                                        <Button variant='primary' onClick={saveProject}><FaPlus />Add</Button>
                                     }
                                     {
                                         projectObj.projectId != 0 &&
@@ -451,20 +424,29 @@ const Project = () => {
                                     }
                                     {/* <Button variant='danger' className='m-2' onClick={() => setShow(false)}>Cancel</Button> */}
                                     <Button variant='secondary' className='m-2' onClick={resetProjectObj}><FaSyncAlt />Reset</Button>
-                                    
-               
+
+
                                 </div>
                             </Modal.Footer>
                         </Modal>
-                        {/* <ToastContainer
-                        position="top-right"
-                        autoClose={1000}
-                        closeButton={false}
-                        theme="light"
-
-                    />
-
-                    <ToastContainer /> */}
+                        <Modal
+                            show={confirmationModalOpen} onHide={closeConfirmationModal} backdrop="static"
+                        >
+                            <Modal.Header closeButton className="bg-light">
+                                <Modal.Title>Confirmation</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                Are you sure you want to delete this project?
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={closeConfirmationModal}>
+                                    No
+                                </Button>
+                                <Button variant="primary" onClick={onDelete}>
+                                    Yes
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
 
 
                     </div>
@@ -477,4 +459,4 @@ const Project = () => {
     );
 };
 
-export default Project;
+export default Project; 

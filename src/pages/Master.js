@@ -11,6 +11,16 @@ import '../index.css';
 import Spinner from 'react-bootstrap/Spinner';
 
 const Master = () => {
+
+    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+    const openConfirmationModal = (projectUser) => {
+        setTicketTypeToDelete(projectUser);
+        setConfirmationModalOpen(true);
+    };
+    const closeConfirmationModal = () => setConfirmationModalOpen(false);
+    const [TicketTypeToDelete, setTicketTypeToDelete] = useState(null);
+
+
     const [activeButton, setActiveButton] = useState(null);
     const [rowData, setRowData] = useState([]);
     const [columnDefs, setColumnDefs] = useState([]);
@@ -93,11 +103,11 @@ const Master = () => {
                     setLoading(false);
                 }
                 else {
-                    
+
                     toast.error("Something Wrong");
                 }
             } catch (error) {
-                
+
                 toast.error(error);
             }
 
@@ -114,12 +124,12 @@ const Master = () => {
                     setLoading(false);
                 }
                 else {
-                 
+
                     toast.error("Something Wrong");
                 }
             })
         } catch (error) {
-        
+
             toast.error(error);
         }
 
@@ -143,7 +153,7 @@ const Master = () => {
                 setvalidationerror(true);
                 if (issueTypeObj.issueType !== "") {
                     setLoading(true);
-                 
+
                     postData(ADD_NEW_TYPE, issueTypeObj).then(result => {
                         if (result != undefined) {
 
@@ -153,6 +163,7 @@ const Master = () => {
 
                                         getIssueTypeList();
                                         handleModal1Close();
+                                        setLoading(false);
 
                                     }, 500); // Adjust the delay as needed
                                 },
@@ -164,8 +175,6 @@ const Master = () => {
 
             } catch (error) {
                 toast.error(error);
-            } finally {
-                setLoading(false);
             }
         }
         else if (activeButton === 2) {
@@ -182,15 +191,13 @@ const Master = () => {
                                     setTimeout(() => {
                                         getissueSatusList();
                                         setRowData(issueStatusList);
-                                        // resetIssueObj();
-                                        //  setvalidationerror(false);
+
                                         handleModal2Close();
+                                        setLoading(false);
 
                                     }, 500); // Adjust the delay as needed
                                 },
                             });
-
-
                         }
                     });
 
@@ -200,10 +207,7 @@ const Master = () => {
                 }
 
             }
-            else {
-                // handleModal2Open();
-                toast.error("Something Wrong");
-            }
+
 
         }
 
@@ -274,12 +278,12 @@ const Master = () => {
     }
     //************ Delete Issue Status by Id */
 
-    const onDelete = async (data) => {
+    const onDelete = async () => {
         //
-        if (data.statusId) {
+        if (TicketTypeToDelete.statusId) {
             try {
 
-                const result = await deleteData(DELETE_STATUS_BY_ID, data.statusId).then(result => {
+                const result = await deleteData(DELETE_STATUS_BY_ID, TicketTypeToDelete.statusId).then(result => {
                     if (result !== undefined) {
 
                         toast.success(result.message)
@@ -289,13 +293,14 @@ const Master = () => {
 
                 toast.error(error);
             }
-        
+            closeConfirmationModal();
+
         }
-        else if (data.issueTypeId) {
+        else if (TicketTypeToDelete.issueTypeId) {
 
             try {
 
-                const result = deleteData(DELETE_ISSUE_TYPE_BY_ID, data.issueTypeId).then(result => {
+                const result = deleteData(DELETE_ISSUE_TYPE_BY_ID, TicketTypeToDelete.issueTypeId).then(result => {
                     if (result !== undefined) {
                         toast.success(result.message)
                         getIssueTypeList();
@@ -305,7 +310,7 @@ const Master = () => {
             } catch (error) {
                 toast.error(error);
             }
-
+            closeConfirmationModal();
         }
 
 
@@ -341,7 +346,7 @@ const Master = () => {
                     <Button
                         variant="danger"
                         className="btn-sm"
-                        onClick={() => onDelete(props.data)}
+                        onClick={() =>  openConfirmationModal(props.data)}
                     >
                         <FontAwesomeIcon icon={faTrash} />
                     </Button>
@@ -363,7 +368,7 @@ const Master = () => {
                     <Button
                         variant="danger"
                         className="btn-sm"
-                        onClick={() => onDelete(props.data)}
+                        onClick={() => openConfirmationModal(props.data)}
                     >
                         <FontAwesomeIcon icon={faTrash} />
                     </Button>
@@ -383,7 +388,7 @@ const Master = () => {
 
     // Load Data To AgGrid
     const handleButtonClick = async (buttonId) => {
-        
+
         setLoading(true);
         setActiveButton(buttonId);
         switch (buttonId) {
@@ -413,9 +418,9 @@ const Master = () => {
 
                 break;
             case 2:
-                
+
                 try {
-                    
+
                     setColumnDefs([
                         {
                             headerName: "Sr.No",
@@ -469,45 +474,45 @@ const Master = () => {
                         <div className='col-md'>
                             <div className="row mt-3 container-fluid">
                                 <div className="row mt-3">
-                                    <div className="col-6" style={{marginLeft:'23%'}}>
+                                    <div className="col-6" style={{ marginLeft: '23%' }}>
                                         <Card>
                                             <Card.Header className="d-flex justify-content-between">
                                                 <Card.Title>
                                                     {activeButton === 1 ? "Issue Type List" : "Issue Status List"}
                                                 </Card.Title>
-                                                <Button onClick={displayModal}>Add New  <FontAwesomeIcon icon={faPlus} /></Button>
+                                                <Button onClick={displayModal}><FontAwesomeIcon icon={faPlus} />Add New  </Button>
                                             </Card.Header>
                                             <Card.Body className="d-flex justify-content-center">
                                                 {
-                                                loading ? (<div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
-                                                    <Button variant="primary" disabled>
-                                                  <Spinner
-                                                    as="span"
-                                                    animation="grow"
-                                                    size="sm"
-                                                    role="status"
-                                                    aria-hidden="true"
-                                                  />
-                                                  Loading...
-                                                </Button>
-                                                    </div>) :(  <div
-                                                    className="ag-theme-quartz align-item-center " style={{ height: 500, width: '100%' }}
-                                                >
-                                                    <AgGridReact
-                                                        columnDefs={columnDefs}
-                                                        rowData={rowData}
-                                                        pagination={true}
-                                                        paginationPageSize={5}
-                                                        paginationPageSizeSelector={[5, 10, 25]}
-                                                        defaultColDef={defaultColDef}
-                                                        overlayLoadingTemplate={loading ? <div className="ag-overlay-loading-center">Loading...</div> : null}
-                                                        overlayNoRowsTemplate={loading ? <div className="ag-overlay-loading-center">No data available</div> : null}
-                                                        frameworkComponents={{ CustomHeaderComponent }}
-                                                 
-                                                    />
-                                                </div>)
+                                                    loading ? (<div className="d-flex justify-content-center align-items-center" style={{ height: 500 }}>
+                                                        <Button variant="primary" disabled>
+                                                            <Spinner
+                                                                as="span"
+                                                                animation="grow"
+                                                                size="sm"
+                                                                role="status"
+                                                                aria-hidden="true"
+                                                            />
+                                                            Loading...
+                                                        </Button>
+                                                    </div>) : (<div
+                                                        className="ag-theme-quartz align-item-center " style={{ height: 500, width: '100%' }}
+                                                    >
+                                                        <AgGridReact
+                                                            columnDefs={columnDefs}
+                                                            rowData={rowData}
+                                                            pagination={true}
+                                                            paginationPageSize={5}
+                                                            paginationPageSizeSelector={[5, 10, 25]}
+                                                            defaultColDef={defaultColDef}
+                                                            overlayLoadingTemplate={loading ? <div className="ag-overlay-loading-center">Loading...</div> : null}
+                                                            overlayNoRowsTemplate={loading ? <div className="ag-overlay-loading-center">No data available</div> : null}
+                                                            frameworkComponents={{ CustomHeaderComponent }}
+
+                                                        />
+                                                    </div>)
                                                 }
-                                               
+
                                             </Card.Body>
                                             <Card.Footer>
 
@@ -528,7 +533,7 @@ const Master = () => {
 
                         <Modal.Header closeButton className=' custom-card-header'>
                             <Modal.Title>
-                               
+
                                 {
                                     issueTypeObj.issueTypeId == 0 && <h4>Add Issue Type</h4>
                                 }
@@ -653,8 +658,27 @@ const Master = () => {
 
                         </Modal.Footer>
                     </Modal>
+
+                    <Modal
+                            show={confirmationModalOpen} onHide={closeConfirmationModal} backdrop="static"
+                        >
+                            <Modal.Header closeButton className="bg-light">
+                                <Modal.Title>Confirmation</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                Are you sure you want to delete this ?
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={closeConfirmationModal}>
+                                    No
+                                </Button>
+                                <Button variant="primary" onClick={onDelete}>
+                                    Yes
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
                 </div>
-               
+
             </div>
         </>
 

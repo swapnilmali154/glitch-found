@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Card, Row, Col, Modal } from "react-bootstrap";
-import {getData, postData , deleteData} from '../Service/Service.js';
+import { getData, postData, deleteData } from '../Service/Service.js';
 import '../Service/Main.css'
 import { AgGridReact } from 'ag-grid-react';
 import "ag-grid-community/styles/ag-grid.css";
@@ -9,38 +9,28 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Spinner from 'react-bootstrap/Spinner';
 import { FaPenSquare, FaPlus, FaSyncAlt, FaEdit } from 'react-icons/fa';
-import {  toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from 'react-toastify';
+
 
 const ProjectUser = () => {
     const [ProjectUserList, setProjectUserList] = useState([]);
-    // const [ProjectUserobj, setProjectUserobj] = useState({
-    //     "projectId": 0,
-    //     "fullName": "",
-    //     "userLogo": "",
-    //     "projectLogo": "",
-    //     "userId": 0,
-    //     "userEmail": "",
-    //     "projectName": "",
-    //     "projectUserId": 0,
-    //     "roleInProject": "",
-    //     "addedDate": "",
-    //     "isActive": "",
-    //     "technicalStack": ""
-    // })
+
     const [ProjectUserobj, setProjectUserobj] = useState({
         "projectUserId": 0,
         "userId": 0,
         "projectId": 0,
         "roleInProject": "",
         "AddedDate": "",
-        "isActive": true,
+        "isActive": false,
         "technicalStack": ""
     })
+
+
     const [isLoading, setisLoading] = useState(false);
     const [projectList, setprojectList] = useState([]);
     const [UserList, setUserList] = useState([]);
     const [Roles, setAllRoles] = useState([]);
+    const [validationerror, setvalidationerror] = useState(false);
     const pagination = true;
     const paginationPageSize = 10;
     const paginationPageSizeSelector = [10, 20, 30];
@@ -50,6 +40,14 @@ const ProjectUser = () => {
         setShow(true);
         resetProjectUserobj();
     };
+    const [confirmationModalOpen, setConfirmationModalOpen] = useState(false);
+    const openConfirmationModal = (projectUser) => {
+        setProjectUserToDelete(projectUser);
+        setConfirmationModalOpen(true);
+    };
+    const closeConfirmationModal = () => setConfirmationModalOpen(false);
+    const [projectUserToDelete, setProjectUserToDelete] = useState(null);
+
 
     const getAllProjectUserList = async () => {
         setisLoading(true);
@@ -105,7 +103,7 @@ const ProjectUser = () => {
         return (
             <React.Fragment>
                 <button style={{ marginRight: '10px' }} className='btn btn-sm btn-success ' onClick={() => onEdit(props.data)} ><FontAwesomeIcon icon={faEdit} /></button>
-                <button className='btn btn-sm btn-danger' onClick={() => onDelete(props.data)} ><FontAwesomeIcon icon={faTrash} /></button>
+                <button className='btn btn-sm btn-danger' onClick={() => openConfirmationModal(props.data)} ><FontAwesomeIcon icon={faTrash} /></button>
             </React.Fragment>
         );
     };
@@ -120,60 +118,71 @@ const ProjectUser = () => {
 
     }
 
-    const onDelete = (user) => {
-        try {
-           
-            deleteData('DeleteUserFromProjectByUserId?id=', user.userId).then((result) => {
-                if (result != undefined) {
-                  //  alert(result.message);
-                  toast.success("User deleted successfully")
-                    getAllProjectList();
+
+    const onDelete = () => {
+        if (projectUserToDelete) {
+          
+            deleteData('DeleteUserFromProjectByUserId?id=', projectUserToDelete.userId).then((result) => {
+                if (result !== undefined) {
+                    if (result.result) {
+                        toast.success("Project User deleted successfully");
+                        getAllProjectUserList();
+                    } else {
+                     toast.error(result.message);
+                    }
                 }
-            })
-        } catch (error) {
-            alert(error);
+            });
         }
-    }
+        closeConfirmationModal();
+    };
+
+
+
     const AddUsers = () => {
 
         try {
-            postData('AddUserToProject', ProjectUserobj).then(result => {
-                if (result != undefined) {
-                    alert(result.message);
-                    getAllProjectUserList();
-                }
-            })
+            setvalidationerror(true)
+            debugger;
+            if (ProjectUserobj.userId !== 0 && ProjectUserobj.roleInProject !== 0 && ProjectUserobj.technicalStack !== "" && ProjectUserobj.isActive !== false) {
+                postData('AddUserToProject', ProjectUserobj).then(result => {
+
+                    if (result.result) {
+                        toast.success(result.message, {
+                            onClose: () => {
+                                setTimeout(() => {
+                                    getAllProjectUserList();
+                                    resetProjectUserobj();
+                                    setShow(false);
+
+                                }, 0);
+                            },
+                        });
+                    } else {
+                        toast.error(result.message);
+                    }
+                })
+                setvalidationerror(false);
+            }
+
         } catch (error) {
-            alert(error);
+            toast.error(error);
         }
-        resetProjectUserobj();
-        setShow(false);
+
+
 
     }
     const resetProjectUserobj = () => {
-        // setProjectUserobj({
-        //     "projectId": 0,
-        //     "fullName": "",
-        //     "userLogo": "",
-        //     "projectLogo": "",
-        //     "userId": 0,
-        //     "userEmail": "",
-        //     "projectName": "",
-        //     "projectUserId": 0,
-        //     "roleInProject": "",
-        //     "addedDate": "",
-        //     "isActive": "",
-        //     "technicalStack": ""
-        // });
+
         setProjectUserobj({
             "projectUserId": 0,
             "userId": 0,
             "projectId": 0,
             "roleInProject": "",
             "AddedDate": "",
-            "isActive": true,
+            "isActive":false,
             "technicalStack": ""
         })
+        setvalidationerror(false)
     };
 
     const [colDefs, setColDefs] = useState([
@@ -192,8 +201,8 @@ const ProjectUser = () => {
 
     ]);
     const handleChange = (event, key) => {
-
-        setProjectUserobj((prevObj) => ({ ...prevObj, [key]: event.target.value }));
+        const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+        setProjectUserobj((prevObj) => ({ ...prevObj, [key]: value }));
     }
     return (
         <>
@@ -255,29 +264,9 @@ const ProjectUser = () => {
                                     <div >
                                         <div className='card-body'>
 
-                                            {/* <div className='row'>
-                                                <div className='col-md-6'>
-                                                    <label>User Id</label>
-                                                    <select className='form-select' value={ProjectUserobj.projectUserId}
-                                                        onChange={(event) => handleChange(event, 'projectUserId')}>
-                                                        <option>Select User Id</option>
-                                                        {
-                                                            ProjectUserList.map((ProjectUser, index) => {
-                                                                return (
-                                                                    <option key={ProjectUser.projectUserId} value={ProjectUser.projectUserId}>{ProjectUser.projectName}</option>
-                                                                )
-                                                            })
-                                                        }
-                                                    </select>
-                                                </div> */}
-                                            {/* <div className='col-md-6'>
-                                                    <label> Added Date </label>
-                                                    <input type='Date' className='form-control' value={ProjectUserobj.addedDate}
-                                                        placeholder='Select Date' onChange={(event) => handleChange(event, 'addedDate')}></input>
-                                                </div>
-                                            </div> */}
+
                                             <div className='row'>
-                                                <div className='col-md-6'>
+                                                <div className='col-6'>
                                                     <label>Project Id</label>
                                                     <select className='form-select' value={ProjectUserobj.projectId}
                                                         onChange={(event) => handleChange(event, 'projectId')}>
@@ -290,8 +279,13 @@ const ProjectUser = () => {
                                                             })
                                                         }
                                                     </select>
+                                                    {
+                                                        validationerror && ProjectUserobj.projectId == 0 && <div className='text-danger'>
+                                                            Select Project
+                                                        </div>
+                                                    }
                                                 </div>
-                                                <div className='col-md-6'>
+                                                <div className='col-6'>
                                                     <label>Name</label>
                                                     <select className='form-select' value={ProjectUserobj.userId} onChange={(event) => handleChange(event, 'userId')}>
                                                         <option>Select User </option>
@@ -304,17 +298,21 @@ const ProjectUser = () => {
                                                             })
                                                         }
                                                     </select>
+                                                    {
+                                                        validationerror && ProjectUserobj.userId == 0 && <div className='text-danger'>
+                                                            Select User
+                                                        </div>
+                                                    }
                                                 </div>
 
 
                                             </div>
 
                                             <div className='row'>
-                                                <div className='col-md-6'>
+                                                <div className='col-6'>
                                                     <label>Role In Project</label>
-                                                    {/* <input type="text" className='form-control' value={ProjectUserobj.roleInProject}
-                                                        placeholder='Enter Role In Project' onChange={(event) => handleChange(event, 'roleInProject')}></input> */}
-                                                 <select className='form-select' value={ProjectUserobj.roleInProject} onChange={(event) => handleChange(event, 'roleInProject')}>
+
+                                                    <select className='form-select' value={ProjectUserobj.roleInProject} onChange={(event) => handleChange(event, 'roleInProject')}>
                                                         <option>Select Role </option>
                                                         {
                                                             Roles.map((roll, index) => {
@@ -325,32 +323,37 @@ const ProjectUser = () => {
                                                             })
                                                         }
                                                     </select>
+                                                    {
+                                                        validationerror && ProjectUserobj.roleInProject == 0 && <div className='text-danger'>
+                                                            Select Role
+                                                        </div>
+                                                    }
+
                                                 </div>
-                                                <div className='col-md-6'>
-                                                    <label>technicalStack</label>
+                                                <div className='col-6'>
+                                                    <label>Technical Stack</label>
                                                     <input type="text" className='form-control' value={ProjectUserobj.technicalStack}
                                                         placeholder='Enter technical Stack' onChange={(event) => handleChange(event, 'technicalStack')}></input>
+                                                    {
+                                                        validationerror && ProjectUserobj.technicalStack == "" && <div className='text-danger'>
+                                                            Enter Technical Stack
+                                                        </div>
+                                                    }
                                                 </div>
+
                                             </div>
 
-                                            {/* <div className='row'>
-                                                <div className='col-md-6'>
-                                                    <label>userLogo</label>
-                                                    <input type="text" className='form-control' value={ProjectUserobj.userLogo}
-                                                        placeholder='Enter user Logo' onChange={(event) => handleChange(event, 'userLogo')}></input>
-                                                </div>
-                                                <div className='col-md-6'>
-                                                    <label>ProjectLogo</label>
-                                                    <input type="text" className='form-control' value={ProjectUserobj.projectLogo}
-                                                        placeholder='Enter Project Logo' onChange={(event) => handleChange(event, 'projectLogo')} ></input>
-                                                </div>
-                                            </div> */}
                                             <div className='row'>
-                                                <div className='col-md-6'>
+                                                <div className='col-6'>
                                                     <input type="checkbox" placeholder="Enter Is Active"
-                                                        onChange={(event) => { updateCheckboxValue(event, "isActive"); }} checked={ProjectUser.isActive}
+                                                        onChange={(event) => { handleChange(event, "isActive"); }} checked={ProjectUser.isActive}
                                                     />
                                                     <label>Is Active</label>
+                                                    {
+                                                        validationerror && ProjectUserobj.isActive == "" && <div className='text-danger'>
+                                                            Check Is active
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -378,6 +381,25 @@ const ProjectUser = () => {
                                 </div>
                             </Modal.Footer>
                         </Modal>
+                        <Modal
+                            show={confirmationModalOpen} onHide={closeConfirmationModal} backdrop="static"
+                        >
+                            <Modal.Header closeButton className="bg-light">
+                                <Modal.Title>Confirmation</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                Are you sure you want to delete this project?
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="secondary" onClick={closeConfirmationModal}>
+                                    No
+                                </Button>
+                                <Button variant="primary" onClick={onDelete}>
+                                    Yes
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+
                     </div>
                 </div>
             </div>

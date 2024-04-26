@@ -16,6 +16,7 @@ import Login from './pages/Login';
 import FilterIssue from './pages/FilterIssue';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AssignToUser from './pages/AssignToUser';
 export function Breadcrumbs() {
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter((x) => x);
@@ -83,6 +84,7 @@ function App() {
             <Route path="/modalDialogue" element={<ModalDialog/>}></Route>
             <Route path="/login" element={<Login/>}></Route>
             <Route path="/filterIssue" element={<FilterIssue/>}></Route>
+            <Route path="/allUserIssues" element={<AssignToUser/>}></Route>
           </Routes>
       
       </BrowserRouter>
