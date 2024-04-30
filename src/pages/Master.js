@@ -159,27 +159,26 @@ const Master = () => {
                         setLoading(false);
                         return;
                     }
-                    else 
-                    {
+                    else {
                         postData(ADD_NEW_TYPE, issueTypeObj).then(result => {
                             if (result != undefined) {
-    
+
                                 toast.success(result.message, {
                                     onClose: () => {
                                         setTimeout(() => {
-    
+
                                             getIssueTypeList();
                                             handleModal1Close();
                                             setLoading(false);
-    
+
                                         }, 500); // Adjust the delay as needed
                                     },
                                 });
-    
+
                             }
                         })
                     }
-                  
+
                 }
 
             } catch (error) {
@@ -198,8 +197,7 @@ const Master = () => {
                         setLoading(false);
                         return;
                     }
-                    else
-                    {
+                    else {
                         postData(ADD_NEW_STATUS, issueObj).then(result => {
                             if (result !== undefined) {
                                 setLoading(false);
@@ -208,17 +206,17 @@ const Master = () => {
                                         setTimeout(() => {
                                             getissueSatusList();
                                             setRowData(issueStatusList);
-    
+
                                             handleModal2Close();
                                             setLoading(false);
-    
+
                                         }, 500); // Adjust the delay as needed
                                     },
                                 });
                             }
                         });
                     }
-    
+
                 } catch (error) {
                     toast.error(error);
                 }
@@ -360,7 +358,7 @@ const Master = () => {
                     <Button
                         variant="danger"
                         className="btn-sm"
-                        onClick={() =>  openConfirmationModal(props.data)}
+                        onClick={() => openConfirmationModal(props.data)}
                     >
                         <FontAwesomeIcon icon={faTrash} />
                     </Button>
@@ -674,23 +672,23 @@ const Master = () => {
                     </Modal>
 
                     <Modal
-                            show={confirmationModalOpen} onHide={closeConfirmationModal} backdrop="static"
-                        >
-                            <Modal.Header closeButton className="bg-light">
-                                <Modal.Title>Confirmation</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                Are you sure you want to delete this ?
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button variant="secondary" onClick={closeConfirmationModal}>
-                                    No
-                                </Button>
-                                <Button variant="primary" onClick={onDelete}>
-                                    Yes
-                                </Button>
-                            </Modal.Footer>
-                        </Modal>
+                        show={confirmationModalOpen} onHide={closeConfirmationModal} backdrop="static"
+                    >
+                        <Modal.Header closeButton className="bg-light">
+                            <Modal.Title>Confirmation</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            Are you sure you want to delete this ?
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={closeConfirmationModal}>
+                                No
+                            </Button>
+                            <Button variant="primary" onClick={onDelete}>
+                                Yes
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
                 </div>
 
             </div>

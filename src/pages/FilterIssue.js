@@ -191,7 +191,7 @@ const FilterIssue = () => {
                                 </div>
                                 <div className='col-2'>
                                     <label><strong>Enter Text</strong> </label>
-                                    <input type="search" placeholder='Enter text' className='form-control' onChange={(event) => { onCangeSelect(event, 'searchText') }} />
+                                    <input type="search" placeholder='Enter text' value={filterobj.searchText} className='form-control' onChange={(event) => { onCangeSelect(event, 'searchText') }} />
                                 </div>
 
                             </div>

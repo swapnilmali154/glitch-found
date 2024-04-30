@@ -5,6 +5,8 @@ import { Modal, Button } from "react-bootstrap";
 import { getData, getDataById, postData } from '../Service/Service.js';
 import { MyContext } from '../MyContextProvider';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 const Board = (props) => {
     const { projectId, shortName } = useParams();
     console.log(projectId);
@@ -32,6 +34,22 @@ const Board = (props) => {
         reporter: 0,
 
     });
+    const [files, setFiles] = useState(null);
+    const [msg, setMsg] = useState(null);
+    const [attachObj, setAttachObj] = useState({
+        "assueAttachmentId": 0,
+        "attachmentFileName": "",
+        "FileType": "",
+        "issueId": 0
+    })
+    const closeAttachObj = () => {
+        setAttachObj({
+            "assueAttachmentId": 0,
+            "attachmentFileName": "",
+            "FileType": "",
+            "issueId": 0
+        })
+    }
     const getProjectList = () => {
         try {
             getData('GetAllProject').then(result => {
@@ -39,11 +57,11 @@ const Board = (props) => {
                     setprojectList(result);
                 }
                 else {
-                    alert('Error in fetching project list');
+                    toast.error('Error in fetching project list');
                 }
             })
         } catch (error) {
-            alert(error);
+            toast.error(error);
         }
 
     }
@@ -56,11 +74,11 @@ const Board = (props) => {
                     setIssueTypeList(result);
                 }
                 else {
-                    alert('Error in fetching issueTypes');
+                    toast.error('Error in fetching issueTypes');
                 }
             })
         } catch (error) {
-            alert(error);
+            toast.error(error);
         }
     }
     const getStatusList = () => {
@@ -70,11 +88,11 @@ const Board = (props) => {
                     setstatusList(result);
                 }
                 else {
-                    alert('Error in fetching status list');
+                    toast.error('Error in fetching status list');
                 }
             })
         } catch (error) {
-            alert(error);
+            toast.error(error);
         }
     }
     const getUserList = () => {
@@ -86,11 +104,11 @@ const Board = (props) => {
                     setuserList(result);
                 }
                 else {
-                    alert('Error in fetching user List');
+                    toast.error('Error in fetching user List');
                 }
             })
         } catch (error) {
-            alert(error);
+            toast.error(error);
         }
     }
     const handleChange = (event, key) => {
@@ -103,30 +121,43 @@ const Board = (props) => {
                 if (result !== undefined) {
                     setgetAllIssues(result);
                 } else {
-                    alert('in board component');
+                   toast.error('in board component');
                 }
             });
         } catch (error) {
-            alert(error);
+            toast.error(error);
         }
     };
-    const getIssueListbyissueId = (issueId) => {
+
+
+    const [attachmentall, setAttachement] = useState([]);
+    const getIssueListbyissueId = async (issueId) => {
 
         try {
+            setAttachObj((prev) => ({ ...prev, "issueId": issueId }));
+            debugger;
+            const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllAttachmentByIssueId?id=" + issueId);
+            if (result != undefined) {
+                setAttachement(result.data.data);
+            }
+            else {
+                toast.success(result.data.message);
+            }
             getDataById(`GetIssueById?id=${issueId}`).then(result => {
                 if (result != undefined) {
 
                     setShow(true);
                     setissueObj(result);
                     //setissulistByIssueId(result);
+
                 }
                 else {
-                    alert('Error in fetching issues by issueId')
+                   toast.error('Error in fetching issues by issueId')
                 }
             })
 
         } catch (error) {
-            alert(error);
+            toast.error(error);
         }
 
 
@@ -139,26 +170,101 @@ const Board = (props) => {
         getStatusList();
         getUserList();
 
+
+
     }, [projectId, getAllIssues]);
 
 
-    const updateIssue = (e) => {
+
+    const handleModelclose = () => {
+        setShow(false);
+        setMsg(null);
+        setFiles(null);
+        closeAttachObj();
+
+    }
+
+    const updateIssue = async (e) => {
         e.preventDefault();
+        try {
+            debugger;
+            const Attachementresponse = await axios.post("https://onlinetestapi.gerasim.in/api/Glitch/AddAttachment", attachObj);
+            if (Attachementresponse.data.result) {
+                setMsg(" Added Successfuly")
+            }
+        }
+        catch (error) {
+
+        }
 
         try {
             postData('UpdateIssue', issueObj).then(result => {
                 if (result != undefined) {
 
-                    alert('Issue Updated Successfully...!');
-                    setShow(false);
+                    toast.success('Issue Updated Successfully...!',{
+                        onClose: () => {
+                            setTimeout(() => {
+
+                               handleModelclose();
+
+                            }, 0); // Adjust the delay as needed
+                        },
+                    });
+                   
+
                 }
                 else {
-                    alert('Error in updateing issue')
+                    toast.error('Error in updateing issue')
                 }
             })
         } catch (error) {
             alert(error);
         }
+    }
+
+
+    const handleUload = async (event) => {
+        debugger;
+        setFiles(event.target.files[0]);
+        if (!event.target.files[0]) {
+            setMsg("No files Selected");
+            return;
+        }
+        else {
+            debugger;
+            const fd = new FormData();
+
+            fd.append('file', event.target.files[0])
+
+            setMsg("Uploding...........");
+
+            try {
+                const response = await axios.post("https://storeapi.gerasim.in/api/Customer/Upload", fd, {
+
+                    headers: {
+                        'Custom-Header': 'value',
+                    }
+                })
+                const fileName = response.data;
+                if (fileName != undefined) {
+
+                    const fname = fileName;
+
+                    setAttachObj((prev) => ({ ...prev, "attachmentFileName": fname }));
+                    setMsg("Upload Successfull")
+
+
+                }
+                else {
+                    setMsg("Upload failed")
+                }
+            }
+            catch (err) {
+                setMsg("Upload failed")
+                toast.error(err)
+            };
+        }
+
     }
     return (
         <div>
@@ -211,13 +317,13 @@ const Board = (props) => {
 
             </div>
             <div className="col-md-12">
-                <Modal show={show} onHide={() => setShow(false)} size="lg">
+                <Modal show={show} onHide={() => handleModelclose()} size="lg" backdrop="static" keyboard={false}>
                     <Modal.Header closeButton className="bg-white custom-card-header">
                         <Modal.Title>Update Issue</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <div>
-                            <form onSubmit={updateIssue}>
+                            <form>
                                 <div className="row">
                                     <div className="col-md-4">
                                         <label>Project</label>
@@ -296,23 +402,39 @@ const Board = (props) => {
                                     </div>
                                 </div>
                                 <div className='row'>
+                                    <div className='col-12'>
+                                    <label> Added Attachment</label>
+                                    <div className="border border-dotted text-start p-5">
+                                    {
+                                        attachmentall.map((attach)=>{
+                                            return(<li>{attach.attachmentFileName}</li>)
+                                        })
+                                    }
+                                    </div>
+                                    </div>
+                                    <div className='col-12'>
                                     <label>Attachment</label>
                                     <div className="border border-dotted text-center p-5">
-                                        <span><i className="fa fa-cloud-arrow-up"></i>Drop files to attach or <a href="#" className="text-decoration-none">
-                                            <label className="custom-file-upload">
-                                                <input type="file" />
-                                                <i className="fa fa-cloud-arrow-up"></i>
-                                                Browse
-                                            </label>
-                                        </a></span>
+                                        <label className="custom-file-upload">  </label>
+                                        <label for="file">Select a file:</label>
+                                        <input type="file" id="file" name="file" onChange={(e) => { handleUload(e) }} />
+
+
+                                        {msg != null && <span>{msg}</span>}
+                                        {
+                                            files != null && <span> {files.length} File Selected</span>
+                                        }
                                     </div>
+                                    </div>
+                                   
                                 </div>
                                 <div className="modal-footer justify-content-between">
+
                                     <div>
                                         <input type="checkbox" name="" id="" /><span>Create another issue</span>
                                     </div>
                                     <div>
-                                        <button type="submit" className="btn btn-primary" >Update</button>
+                                        <button type="submit" className="btn btn-primary" onClick={updateIssue} >Update</button>
                                     </div>
                                 </div>
                             </form>
