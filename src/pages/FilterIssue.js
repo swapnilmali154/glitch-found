@@ -5,6 +5,7 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { Card, Button } from "react-bootstrap";
 import Spinner from 'react-bootstrap/Spinner';
+import { toast } from 'react-toastify';
 const FilterIssue = () => {
     const [IssueList, setIssueList] = useState([]);
     const [projectuser, setProjectUser] = useState([]);
@@ -14,12 +15,12 @@ const FilterIssue = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [isLoading, setisLoading] = useState(false);
     const [filterobj, setFilterObj] = useState({
-        "reporter": 0,
-        "assignedTo": 0,
-        "statusId": 0,
-        "projectId": 0,
-        "issueTypeId": 0,
-        "searchText": ""
+        "reporter": null,
+        "assignedTo": null,
+        "statusId": null,
+        "projectId": null,
+        "issueTypeId": null,
+        "searchText": null
     })
 
     const onCangeSelect = (event, key) => {
@@ -28,61 +29,43 @@ const FilterIssue = () => {
     /**************************  Filter Logic ***********8 */
     const getfilter = async () => {
         setisLoading(true);
-        const response = await axios.post("https://onlinetestapi.gerasim.in/api/Glitch/GetIssuesByFilter", filterobj);
-
-        if (response.data.result) {
-            if (filterobj.searchText !== undefined && filterobj.searchText !== '') {
-                const result = IssueList.filter(issue => {
-                    return (
-                        (issue.status && issue.status.toLowerCase().includes(filterobj.searchText.toLowerCase())) ||
-                        (issue.assignedToUser && issue.assignedToUser.toLowerCase().includes(filterobj.searchText.toLowerCase())) ||
-                        (issue.description && issue.description.toLowerCase().includes(filterobj.searchText.toLowerCase())) ||
-                        (issue.createdByUserName && issue.createdByUserName.toLowerCase().includes(filterobj.searchText.toLowerCase())) ||
-                        (issue.issueTypeName && issue.issueTypeName.toLowerCase().includes(filterobj.searchText.toLowerCase())) ||
-                        (issue.summary && issue.summary.toLowerCase().includes(filterobj.searchText.toLowerCase()))
-                    );
-                });
-                setFilteredData(result);
-            } else if (filterobj.statusId !== undefined) {
-                const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssuesByStatusId?id=" + filterobj.statusId)
-                setFilteredData(result.data.data);
-            } else if (filterobj.issueTypeId !== undefined) {
-                const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssuesByTypeId?id=" + filterobj.issueTypeId)
-                setFilteredData(result.data.data);
-            } else if (filterobj.projectId !== undefined) {
-                const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssuesByProjectId?id=" + filterobj.projectId)
-                setFilteredData(result.data.data);
-            } else if (filterobj.assignedTo !== undefined) {
-                const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllAssignedIssuesByUserId?id=" + filterobj.assignedTo)
-                setFilteredData(result.data.data);
-            } else if (filterobj.reporter !== undefined) {
-                const filteredArray = IssueList.filter(issue => issue.reporter === Number(filterobj.reporter));
-                setFilteredData(filteredArray);
-               
+        try {
+            const response = await axios.post("https://onlinetestapi.gerasim.in/api/Glitch/GetIssuesByFilter", filterobj);
+            if (response.data.result) {
+                debugger;
+                const data = await response.json();
+                setFilteredData(data);
+            } else {
+                toast.error('Failed to fetch issues');
             }
+        }
+        catch (error) {
+            toast.error(error);
         }
         setisLoading(false);
     }
     /************ Get ALL API */
-    useEffect(() => {
+    const fetchData = async () => {
         setisLoading(true);
-        const fetchData = async () => {
-            const issueResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssues");
-            const issueStatus = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssueStatus");
-            const projectUserResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllProject");
-            const issueTypeResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssueTypes");
-            const allUserResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllUsers");
-            setIssueList(issueResponse.data.data);
-            setIssueStatus(issueStatus.data.data);
-            setProjectUser(projectUserResponse.data.data);
-            setissueType(issueTypeResponse.data.data);
-            setalluser(allUserResponse.data.data);
-            setFilteredData(issueResponse.data.data);
-            setisLoading(false)
-        };
-
+        const issueResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssues");
+        const issueStatus = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssueStatus");
+        const projectUserResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllProject");
+        const issueTypeResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllIssueTypes");
+        const allUserResponse = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllUsers");
+        setIssueList(issueResponse.data.data);
+        setIssueStatus(issueStatus.data.data);
+        setProjectUser(projectUserResponse.data.data);
+        setissueType(issueTypeResponse.data.data);
+        setalluser(allUserResponse.data.data);
+        setFilteredData(issueResponse.data.data);
+        setisLoading(false)
+    };
+    useEffect(() => {
         fetchData();
     }, []);
+    useEffect(() => {
+        getfilter();
+      }, [filteredData]);
     /************ For large Data in Summary and Description filed */
     const summaryCellRenderer = (params) => {
         return <div className="scrollable-cell">{params.value}</div>;
@@ -221,7 +204,7 @@ const FilterIssue = () => {
                                     Loading...
                                 </Button>
                             </div>) : (<div className="ag-theme-quartz" style={{ height: 500, width: '100%' }}>
-                            
+
                                 {filteredData.length > 0 ? (
                                     <AgGridReact
                                         rowData={filteredData}
@@ -234,7 +217,7 @@ const FilterIssue = () => {
                                     />
                                 ) : (
                                     <div style={{ textAlign: 'center', marginTop: '15%', fontSize: '30px', color: 'gray' }}>
-                                       Issue Not found
+                                        Issue Not found
                                     </div>
                                 )}
                             </div>)

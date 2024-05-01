@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FaEdit, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaEdit, FaCheck, FaTimes, FaTrash } from 'react-icons/fa';
 import { Card, Form, Row, Col, CardHeader, CardBody } from 'react-bootstrap';
 import { Modal, Button } from "react-bootstrap";
 import { getData, getDataById, postData } from '../Service/Service.js';
@@ -36,6 +36,7 @@ const Board = (props) => {
     });
     const [files, setFiles] = useState(null);
     const [msg, setMsg] = useState(null);
+    const imgUrl = 'http://storeapi.gerasim.in/customer/';
     const [attachObj, setAttachObj] = useState({
         "assueAttachmentId": 0,
         "attachmentFileName": "",
@@ -50,6 +51,20 @@ const Board = (props) => {
             "issueId": 0
         })
     }
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [currentAttachment, setCurrentAttachment] = useState('');
+
+    const handleOpenAttach = (attachmentFileName) => {
+
+        setCurrentAttachment(attachmentFileName);
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setCurrentAttachment('');
+        setModalOpen(false);
+    };
     const getProjectList = () => {
         try {
             getData('GetAllProject').then(result => {
@@ -121,21 +136,21 @@ const Board = (props) => {
                 if (result !== undefined) {
                     setgetAllIssues(result);
                 } else {
-                   toast.error('in board component');
+                    toast.error('in board component');
                 }
             });
         } catch (error) {
             toast.error(error);
         }
     };
-
+    /*******  Get All Attachement by Issue ID,and GetIssueBy IssueId */
 
     const [attachmentall, setAttachement] = useState([]);
     const getIssueListbyissueId = async (issueId) => {
 
         try {
             setAttachObj((prev) => ({ ...prev, "issueId": issueId }));
-            debugger;
+
             const result = await axios.get("https://onlinetestapi.gerasim.in/api/Glitch/GetAllAttachmentByIssueId?id=" + issueId);
             if (result != undefined) {
                 setAttachement(result.data.data);
@@ -152,7 +167,7 @@ const Board = (props) => {
 
                 }
                 else {
-                   toast.error('Error in fetching issues by issueId')
+                    toast.error('Error in fetching issues by issueId')
                 }
             })
 
@@ -174,7 +189,7 @@ const Board = (props) => {
 
     }, [projectId, getAllIssues]);
 
-
+    /*********** Modal Close */
 
     const handleModelclose = () => {
         setShow(false);
@@ -183,34 +198,35 @@ const Board = (props) => {
         closeAttachObj();
 
     }
+    /************ Update Issue and Add Attachement */
 
     const updateIssue = async (e) => {
         e.preventDefault();
         try {
-            debugger;
+
             const Attachementresponse = await axios.post("https://onlinetestapi.gerasim.in/api/Glitch/AddAttachment", attachObj);
             if (Attachementresponse.data.result) {
                 setMsg(" Added Successfuly")
             }
         }
         catch (error) {
-
+            toast.error(error);
         }
 
         try {
             postData('UpdateIssue', issueObj).then(result => {
                 if (result != undefined) {
 
-                    toast.success('Issue Updated Successfully...!',{
+                    toast.success('Issue Updated Successfully...!', {
                         onClose: () => {
                             setTimeout(() => {
 
-                               handleModelclose();
+                                handleModelclose();
 
                             }, 0); // Adjust the delay as needed
                         },
                     });
-                   
+
 
                 }
                 else {
@@ -221,23 +237,19 @@ const Board = (props) => {
             alert(error);
         }
     }
-
+    /************************* Select And Uplod File  */
 
     const handleUload = async (event) => {
-        debugger;
+
         setFiles(event.target.files[0]);
         if (!event.target.files[0]) {
             setMsg("No files Selected");
             return;
         }
         else {
-            debugger;
             const fd = new FormData();
-
             fd.append('file', event.target.files[0])
-
             setMsg("Uploding...........");
-
             try {
                 const response = await axios.post("https://storeapi.gerasim.in/api/Customer/Upload", fd, {
 
@@ -247,13 +259,9 @@ const Board = (props) => {
                 })
                 const fileName = response.data;
                 if (fileName != undefined) {
-
                     const fname = fileName;
-
                     setAttachObj((prev) => ({ ...prev, "attachmentFileName": fname }));
                     setMsg("Upload Successfull")
-
-
                 }
                 else {
                     setMsg("Upload failed")
@@ -403,30 +411,53 @@ const Board = (props) => {
                                 </div>
                                 <div className='row'>
                                     <div className='col-12'>
-                                    <label> Added Attachment</label>
-                                    <div className="border border-dotted text-start p-5">
-                                    {
-                                        attachmentall.map((attach)=>{
-                                            return(<li>{attach.attachmentFileName}</li>)
-                                        })
-                                    }
-                                    </div>
+                                        <label> Added Attachment</label>
+                                        <div className="row">
+                                            {attachmentall.length === 0 ? (
+                                                <div className="col-12 text-center">
+                                                    <div className="pt-2 pb-2" style={{ backgroundColor: 'lightgray' }}>
+                                                        <p>No Attachment Present</p>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                attachmentall.map(item => (
+                                                    <div className="col-3" key={item.attachmentFileName}>
+                                                        <div className="card" onClick={() => handleOpenAttach(item.attachmentFileName)}>
+                                                            <img src={imgUrl + item.attachmentFileName} style={{ height: '90px' }} className="card-img-top" alt="..." />
+                                                            <div className="card-footer">
+                                                                <div className="row">
+                                                                    <div className="col-8">
+                                                                       <small>{item.attachmentFileName}</small>
+                                                                       </div>
+                                                                        <div className='col-4'>
+                                                                        <Button variant="danger" className="btn-sm" >
+                                                                            <FaTrash />
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+
                                     </div>
                                     <div className='col-12'>
-                                    <label>Attachment</label>
-                                    <div className="border border-dotted text-center p-5">
-                                        <label className="custom-file-upload">  </label>
-                                        <label for="file">Select a file:</label>
-                                        <input type="file" id="file" name="file" onChange={(e) => { handleUload(e) }} />
+                                        <label>Attachment</label>
+                                        <div className="border border-dotted text-center p-5">
+                                            <label className="custom-file-upload">  </label>
+                                            <label for="file">Select a file:</label>
+                                            <input type="file" id="file" name="file" onChange={(e) => { handleUload(e) }} />
 
 
-                                        {msg != null && <span>{msg}</span>}
-                                        {
-                                            files != null && <span> {files.length} File Selected</span>
-                                        }
+                                            {msg != null && <span>{msg}</span>}
+                                            {
+                                                files != null && <span> {files.length} File Selected</span>
+                                            }
+                                        </div>
                                     </div>
-                                    </div>
-                                   
+
                                 </div>
                                 <div className="modal-footer justify-content-between">
 
@@ -441,8 +472,29 @@ const Board = (props) => {
                         </div>
                     </Modal.Body>
                 </Modal>
+                {modalOpen && (
+
+                    <Modal show={modalOpen}>
+                        <Modal.Header>
+                            <h5 className="modal-title">Attachment </h5>
+                            <button type="button" className="btn-close" aria-label="Close" onClick={closeModal}></button>
+
+                        </Modal.Header>
+                        <Modal.Body>
+                            <img src={imgUrl + currentAttachment} alt={currentAttachment} style={{ width: "300px" }} />
+                        </Modal.Body>
+                        {/* <Modal.Footer>
+                            <Button variant="danger" className="btn-sm" >
+                                <FaTrash />
+                            </Button>
+                        </Modal.Footer> */}
+
+                    </Modal>
+
+                )}
+
             </div>
-        </div>
+        </div >
     );
 };
 
