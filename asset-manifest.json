@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/glitch-found/static/css/main.2c534e18.css",
+    "main.js": "/glitch-found/static/js/main.c8b3d2bc.js",
+    "static/js/453.1d9a816d.chunk.js": "/glitch-found/static/js/453.1d9a816d.chunk.js",
+    "static/media/logo.svg": "/glitch-found/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/glitch-found/index.html",
+    "main.2c534e18.css.map": "/glitch-found/static/css/main.2c534e18.css.map",
+    "main.c8b3d2bc.js.map": "/glitch-found/static/js/main.c8b3d2bc.js.map",
+    "453.1d9a816d.chunk.js.map": "/glitch-found/static/js/453.1d9a816d.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2c534e18.css",
+    "static/js/main.c8b3d2bc.js"
+  ]
+}
